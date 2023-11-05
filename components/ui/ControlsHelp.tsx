@@ -50,9 +50,10 @@ export default function ControlsHelp ({ reverse }:{ reverse?: boolean }) {
       <Keyboard reverse description="Down" keyIn="S" />
       <Keyboard reverse description="Left" keyIn="A" />
       <Keyboard reverse description="Right" keyIn="D" />
+      <Keyboard reverse description="Fix Position to Center" keyIn="C" />
       <Keyboard reverse description="(Hold) Run Faster" keyIn="___" />
-      <Keyboard reverse description="Open/Close Help and About" extraClass="font-bold" keyIn="H" />
       <Keyboard reverse description="Toggle First Person Perspective Mode" keyIn="E" />
+      <Keyboard reverse description="Open/Close Help and About" extraClass="font-bold" keyIn="H" />
       </div>
       <KeyboardLong reverse description="Pan in Bird Mode" keyIn="LClick" />
       <KeyboardLong reverse description="Rotate in Bird Mode" keyIn="RClick" />

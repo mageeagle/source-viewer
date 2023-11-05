@@ -9,13 +9,15 @@ import { useShallow } from 'zustand/react/shallow'
 import regainPointer from '@/helpers/regainPointer'
 import OSC from 'osc-js'
 
-const SPEED = 0.25
-const keys = { KeyE: 'god', KeyW: 'forward', KeyS: 'backward', KeyA: 'left', KeyD: 'right', Space: 'fast', KeyH: 'help' }
+const SPEED = 0.01
+const keys = { KeyE: 'god', KeyC: 'free', KeyW: 'forward', KeyS: 'backward', KeyA: 'left', KeyD: 'right', Space: 'fast', KeyH: 'help' }
 const moveFieldByKey = (key: keyof typeof keys) => keys[key]
 // Distance from the ground from god view
 const topView = new Vector3(0, 20, 0)
+const lock = new Vector3(0, 0, 0)
+const front = new Vector3(0, 0, -1)
 const usePlayerControls = () => {
-  const [movement, setMovement] = useState({ god: false, forward: false, backward: false, left: false, right: false, fast: false, help: false })
+  const [movement, setMovement] = useState({ god: false, free: false, forward: false, backward: false, left: false, right: false, fast: false, help: false })
   useEffect(() => {
     const handleKeyDown = (e: { code: any }) => setMovement((m) => ({ ...m, [moveFieldByKey(e.code)]: true }))
     const handleKeyUp = (e: { code: any }) => setMovement((m) => ({ ...m, [moveFieldByKey(e.code)]: false }))
@@ -33,13 +35,11 @@ export default function Player () {
   const direction = useRef(new Vector3())
   const frontVector = useRef(new Vector3())
   const sideVector = useRef(new Vector3())
-  // const speed = useRef(new THREE.Vector3())
-
   // const [ref, api] = useSphere(() => ({ mass: 1, type: 'Dynamic', position: [0, 10, 0], ...props }))
   const meshRef = useRef<Mesh<BufferGeometry<NormalBufferAttributes>> | null>(null)
 
-  const { fast, forward, backward, left, right, god, help } = usePlayerControls()
-  const [godMode, about, osc, setPos, started] = useUser(useShallow(s => [s.god, s.about, s.osc, s.setPos, s.started]))
+  const { fast, forward, backward, left, right, god, help, free } = usePlayerControls()
+  const [godMode, freeState, about, osc, setPos, started] = useUser(useShallow(s => [s.god, s.free, s.about, s.osc, s.setPos, s.started]))
 
   // god mode toggle
   useEffect(() => {
@@ -48,12 +48,24 @@ export default function Player () {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [god])
 
+  // free mode toggle
+  useEffect(() => {
+    if (!free || !started) return
+    useUser.getState().setZus('free', !freeState)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [free])
+
   // Regain Pointer after getting out of first person mode
   useEffect(() => {
     if (!godMode) return
       regainPointer()
       timeout.current = 0
       camera.lookAt(0, 0, 0)
+      // return to origin
+      const xyz = new OSC.Message('/listener/xyz', 0, 0, 0)
+      const dir = new OSC.Message('/listener/orientation', 0, 0, 0, 1)
+      const bundle = new OSC.Bundle(xyz, dir)
+      osc?.send(bundle)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [godMode])
 
@@ -65,6 +77,12 @@ export default function Player () {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [help])
 
+  useEffect(() => {
+    if (!about) return
+    regainPointer()
+  }, [about])
+  
+
   // Three.js Code
 
   const { camera } = useThree()
@@ -73,7 +91,7 @@ export default function Player () {
 
   useFrame((state, delta) => {
     if (!meshRef.current) return
-    // (!freeState) && meshRef.current.position.copy(camera.position);
+    (!freeState) && meshRef.current.position.copy(lock);
     (!godMode) && meshRef.current.getWorldPosition(camera.position)
     // Lazy to set timeout
 
@@ -82,14 +100,15 @@ export default function Player () {
       camera.position.lerp(topView, 0.05)
     }
     // fakeRef.current.position.copy(camera.position)
-    if (godMode) return
-    frontVector.current.set(0, 0, Number(backward) - Number(forward))
-    sideVector.current.set(Number(left) - Number(right), 0, 0)
-    direction.current.subVectors(frontVector.current, sideVector.current).normalize().multiplyScalar((fast ? (SPEED * 4) : SPEED)).applyEuler(camera.rotation)
-    direction.current.y = 0
-    // speed.current.fromArray(velocity.current)
-    meshRef.current.position.add(direction.current)
-    if (!osc) return
+    if (freeState) {
+      frontVector.current.set(0, 0, Number(backward) - Number(forward))
+      sideVector.current.set(Number(left) - Number(right), 0, 0)
+      direction.current.subVectors(frontVector.current, sideVector.current).normalize().multiplyScalar((fast ? (SPEED * 4) : SPEED)).applyEuler(camera.rotation)
+      direction.current.y = 0
+      // speed.current.fromArray(velocity.current)
+      meshRef.current.position.add(direction.current)
+    }
+    if (!osc || godMode) return
     const quat = camera.quaternion 
     const posVec = meshRef.current.position
     setPos([posVec.x, posVec.y, posVec.z])
@@ -102,7 +121,7 @@ export default function Player () {
 
   return (
     <>
-      <mesh position={[0, 1, 0]} ref={meshRef} visible={false} />
+      <mesh position={[0, 0, 0]} ref={meshRef} visible={false} />
 
       {godMode ? <OrbitControls /> : null}
       {

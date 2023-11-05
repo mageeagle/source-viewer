@@ -35,6 +35,7 @@ interface StoreState {
   sourceNo: number,
   speakerNo: number,
   god: boolean,
+  free: boolean,
   infoSection: number,
   sourceFade: boolean,
   start: () => void,
@@ -60,6 +61,7 @@ interface StoreState {
 const user = {
   osc: null,
   god: true,
+  free: true,
   initialized: false,
   started: false,
   about: false,

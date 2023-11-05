@@ -34,10 +34,9 @@ export default function SpeakerSource ({ index }: {index: number}) {
   // const vec = new Vector3(Math.random() * 100, Math.random() * 100, Math.random() * 100)
   useFrame(() => {
     if (!box.current || !mat.current) return
- 
+    mat.current.opacity = (speakerColor?.a) ? speakerColor?.a : 1
     if ((!(vec.current.equals(box.current.position))) && (!(mat.current.opacity > 0))) {
       box.current.position.copy(vec.current)
-      mat.current.opacity = (speakerColor?.a) ? speakerColor?.a : 1
       return
     }
     if (!(vec.current.equals(box.current.position))) {
@@ -48,13 +47,12 @@ export default function SpeakerSource ({ index }: {index: number}) {
       } else {
         box.current.position.lerp(vec.current, 0.6)
       }
-      mat.current.opacity = (speakerColor?.a) ? speakerColor?.a : 1
     }
   })
 
   return (
     <mesh ref={box}>
-      <boxGeometry args={[0.2, 0.2, 0.2]} />
+      <boxGeometry args={[0.1, 0.1, 0.1]} />
       <meshPhongMaterial ref={mat} transparent={true} color={`rgb(${speakerColor?.r}, ${speakerColor?.g}, ${speakerColor?.b})`}/>
     </mesh>
   )

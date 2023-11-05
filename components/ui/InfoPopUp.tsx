@@ -13,13 +13,28 @@ import ColorPickerGroup from "./ColorPickerGroup";
 import ColorPicker from "./ColorPicker";
 import { useShallow } from "zustand/react/shallow";
 
+const FadeToggle = () => {
+  const [sourceFade, toggleSourceFade] = useUser(
+    useShallow((s) => [s.sourceFade, s.toggleSourceFade])
+  );
+  return (
+    <div className="w-fit flex items-center mx-2">
+      <div>Hide Source if Not Moving</div>
+      <input
+        className="mx-2"
+        type="checkbox"
+        checked={sourceFade}
+        onChange={toggleSourceFade}
+      ></input>
+    </div>
+  );
+};
+
 export default function InfoPopUp() {
   const section = useUser((state) => state.infoSection) || 1;
   const sourceNo = useUser((s) => s.sourceNo);
   const speakerNo = useUser((s) => s.speakerNo);
-  const [sourceFade, toggleSourceFade] = useUser(
-    useShallow((s) => [s.sourceFade, s.toggleSourceFade])
-  );
+
   return (
     <div className={bottomRight + " z-50"}>
       <div className="bottom-0 right-0 absolute grid grid-cols-1 justify-items-end text-gray-400 text-right">
@@ -45,17 +60,7 @@ export default function InfoPopUp() {
             )}
             {section === 5 && <ColorPicker />}
           </div>
-          {section === 3 && (
-            <div className="w-fit flex items-center mx-2">
-              <div>Fade Source if Not Moving</div>
-              <input
-                className="mx-2"
-                type="checkbox"
-                checked={sourceFade}
-                onChange={toggleSourceFade}
-              ></input>
-            </div>
-          )}
+          {section === 3 && <FadeToggle />}
         </div>
 
         <div className="flex w-screen flex-wrap-reverse flex-row-reverse items-center">
