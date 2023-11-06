@@ -5,7 +5,7 @@ import {
   BufferGeometry,
   NormalBufferAttributes,
 } from "three";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useUser } from "@/hooks/useZustand";
 
@@ -35,14 +35,12 @@ export default function SoundSource({ index }: { index: number }) {
     const color = osc.on(
       "/source/" + index + "/color",
       (message: { args: any }) => {
-        useUser
-          .getState()
-          .setNestedZus("sourceColor", index, {
-            r: message.args[0] * 255,
-            g: message.args[1] * 255,
-            b: message.args[2] * 255,
-            a: message.args[3],
-          });
+        useUser.getState().setNestedZus("sourceColor", index, {
+          r: Math.round(message.args[0] * 255),
+          g: Math.round(message.args[1] * 255),
+          b: Math.round(message.args[2] * 255),
+          a: message.args[3],
+        });
       }
     );
     return () => {
@@ -60,6 +58,10 @@ export default function SoundSource({ index }: { index: number }) {
     new Vector3(...[Math.random() * 5, Math.random() * 5, Math.random() * 5])
   );
   const sourceColor = useUser((s) => s.sourceColor[index]);
+  const color = useMemo(
+    () => `rgb(${sourceColor?.r}, ${sourceColor?.g}, ${sourceColor?.b})`,
+    [sourceColor]
+  );
 
   useEffect(() => {
     if (!mat.current) return;
@@ -95,11 +97,7 @@ export default function SoundSource({ index }: { index: number }) {
   return (
     <mesh ref={ball}>
       <sphereGeometry args={[0.05, 32, 16]} />
-      <meshPhongMaterial
-        ref={mat}
-        transparent={true}
-        color={`rgb(${sourceColor?.r}, ${sourceColor?.g}, ${sourceColor?.b})`}
-      />
+      <meshPhongMaterial ref={mat} transparent={true} color={color} />
     </mesh>
   );
 }

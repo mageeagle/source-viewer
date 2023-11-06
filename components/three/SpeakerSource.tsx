@@ -5,7 +5,7 @@ import {
   BufferGeometry,
   NormalBufferAttributes,
 } from "three";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useUser } from "@/hooks/useZustand";
 
@@ -34,14 +34,12 @@ export default function SpeakerSource({ index }: { index: number }) {
     const color = osc.on(
       "/speaker/" + index + "/color",
       (message: { args: any }) => {
-        useUser
-          .getState()
-          .setNestedZus("speakerColor", index, {
-            r: message.args[0] * 255,
-            g: message.args[1] * 255,
-            b: message.args[2] * 255,
-            a: message.args[3],
-          });
+        useUser.getState().setNestedZus("speakerColor", index, {
+          r: Math.round(message.args[0] * 255),
+          g: Math.round(message.args[1] * 255),
+          b: Math.round(message.args[2] * 255),
+          a: message.args[3],
+        });
       }
     );
     return () => {
@@ -57,6 +55,11 @@ export default function SpeakerSource({ index }: { index: number }) {
     new Vector3(...[Math.random() * 5, Math.random() * 5, Math.random() * 5])
   );
   const speakerColor = useUser((s) => s.speakerColor[index]);
+  const color = useMemo(
+    () => `rgb(${speakerColor?.r}, ${speakerColor?.g}, ${speakerColor?.b})`,
+    [speakerColor]
+  );
+
   // Randomize Starting Point to avoid Clash and Lag during initialization
   // const vec = new Vector3(Math.random() * 100, Math.random() * 100, Math.random() * 100)
   useFrame(() => {
@@ -83,11 +86,7 @@ export default function SpeakerSource({ index }: { index: number }) {
   return (
     <mesh ref={box}>
       <boxGeometry args={[0.1, 0.1, 0.1]} />
-      <meshPhongMaterial
-        ref={mat}
-        transparent={true}
-        color={`rgb(${speakerColor?.r}, ${speakerColor?.g}, ${speakerColor?.b})`}
-      />
+      <meshPhongMaterial ref={mat} transparent={true} color={color} />
     </mesh>
   );
 }
