@@ -54,6 +54,7 @@ interface StoreState {
   speakerNo: number;
   god: boolean;
   free: boolean;
+  connected: boolean;
   infoSection: number;
   sourceFade: boolean;
   start: () => void;
@@ -94,6 +95,7 @@ const user = {
   started: false,
   about: false,
   sourceFade: true,
+  connected: false,
   infoSection: 1,
   ip: "localhost",
   port: 8080,

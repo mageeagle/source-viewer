@@ -34,6 +34,7 @@ export default function InfoPopUp() {
   const section = useUser((state) => state.infoSection) || 1;
   const sourceNo = useUser((s) => s.sourceNo);
   const speakerNo = useUser((s) => s.speakerNo);
+  const connected = useUser((s) => s.connected);
 
   return (
     <div className={bottomRight + " z-50"}>
@@ -65,6 +66,9 @@ export default function InfoPopUp() {
 
         <div className="flex w-screen flex-wrap-reverse flex-row-reverse items-center">
           <AboutClose />
+          {section === 1 && (
+            <div className="font-bold">{connected ? " " : "Not Connected"}</div>
+          )}
           <SectionSelector i={1} name="Description" />
           <SectionSelector i={2} name="Controls" />
           <SectionSelector i={3} name="Source Color Picker" />

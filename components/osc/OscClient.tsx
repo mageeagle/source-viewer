@@ -13,15 +13,11 @@ export default function OscClient() {
     const osc = new OSC();
 
     osc.on("open", () => {
-      console.log("connected");
+      useUser.getState().setZus("connected", true);
     });
 
     osc.on("close", () => {
-      console.log("closed");
-    });
-
-    osc.on("error", (message: any) => {
-      console.log(message);
+      useUser.getState().setZus("connected", false);
     });
 
     useUser.getState().setOsc(osc);
