@@ -55,8 +55,8 @@ export default function ColorPickerGroup({
           className={smallInputClass}
           value={sourceMin}
           onChange={(e) => setSourceMin(Number(e.target.value))}
-        />
-        {" "}to{" "}
+        />{" "}
+        to{" "}
         <input
           className={smallInputClass}
           value={sourceMax}
