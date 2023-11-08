@@ -11,11 +11,13 @@ import { RgbaColorPicker } from "react-colorful";
 
 export default function ColorPickerGroup({
   colorKey,
+  alphaKey,
   maxSource,
   name,
   addClass,
 }: {
   colorKey: string | number;
+  alphaKey: string | number;
   maxSource: number;
   name: string;
   addClass?: string;
@@ -40,7 +42,8 @@ export default function ColorPickerGroup({
     const min = sourceMax > sourceMin ? sourceMin : sourceMax;
     const max = sourceMax > sourceMin ? sourceMax : sourceMin;
     for (let i = min; i <= max; i++) {
-      useUser.getState().setNestedZus(colorKey, i, sourceColor);
+      useUser.getState().setNestedZus(colorKey, i, [sourceColor.r / 255, sourceColor.g / 255, sourceColor.b / 255]);
+      useUser.getState().setNestedZus(alphaKey, i, sourceColor.a);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sourceColor]);

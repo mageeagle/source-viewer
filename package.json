@@ -12,6 +12,7 @@
     "@react-three/drei": "^9.88.9",
     "@react-three/fiber": "^8.15.9",
     "@types/three": "^0.158.0",
+    "fast-equals": "^5.0.1",
     "immer": "^10.0.3",
     "next": "^14.0.2-canary.10",
     "osc-js": "^2.4.0",

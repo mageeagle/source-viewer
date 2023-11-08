@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Source Viewer
 
-## Getting Started
+![](./docs/example.gif)
 
-First, run the development server:
+Position Viewer in Browser for Object-Based Audio Spatialization via OSC, built with Next.js, Three.js (react-three-fiber) and osc-js.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+The interface allows the viewing of sound sources and speaker position in a 3D Environment / First Person View in the browser, and allows viewing / controlling listener position / orientation across a network from a server through WebSockets.
+
+### Connection:
+1) Open a WebSocket server for OSC on the host computer. (Please refer to Examples)
+2) Open the Interface and enter the IP address and port number to connect. localhost in IP for local use on same computer.
+3) Refer to the Info Button for Controls in the Interface
+
+### Supported OSC Messages:
+#### From Host to Viewer
+Position
 ```
+/[source/speaker]/[index]/xyz [x y z]
+```
+Color
+```
+/[source/speaker]/[index]/color [r g b a] <Normalized Value 0-1>
+```
+Number of Source/Speakers displayed
+```
+/[source/speaker]/number <number>
+```
+#### From Viewer to Host
+```
+/listener/position [x y z]
+```
+```
+/listener/orientation [z y x w] <Quaternion>
+```
+Note: Coordinate and Quaternion formats follow the format in SPAT5.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Tip for broadcasting to multiple devices: Source/Speaker Numbers and Colors are not saved across sessions and different devices. To keep consistancy, the data could be saved on the server and sent to new devices connected to the WebSocket server. This is out of scope of this Front-End Interface. Please refer to the examples.

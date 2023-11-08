@@ -37,11 +37,13 @@ export const subNestedKey = (
 interface StoreState {
   bgColor: string;
   sourceColor: {
-    [index: number]: { r: number; g: number; b: number; a: number };
+    [index: number]: { r: number; g: number; b: number };
   };
   speakerColor: {
-    [index: number]: { r: number; g: number; b: number; a: number };
+    [index: number]: { r: number; g: number; b: number };
   };
+  speakerAlpha: { [index: number]: number };
+  sourceAlpha: { [index: number]: number };
   osc: OSC | null;
   initialized: boolean;
   started: boolean;
@@ -50,6 +52,8 @@ interface StoreState {
   port: number;
   pos: Array<number>;
   dir: Array<number>;
+  speakerPos: { [index: number]: Array<number> };
+  sourcePos: { [index: number]: Array<number> };
   sourceNo: number;
   speakerNo: number;
   god: boolean;
@@ -103,8 +107,12 @@ const user = {
   dir: [0, 0, 0],
   sourceNo: 1,
   speakerNo: 0,
+  sourcePos: {},
+  speakerPos: {},
   sourceColor: {},
   speakerColor: {},
+  sourceAlpha: {},
+  speakerAlpha: {},
   bgColor: "Black",
 };
 

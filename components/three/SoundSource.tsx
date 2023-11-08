@@ -4,100 +4,174 @@ import {
   Mesh,
   BufferGeometry,
   NormalBufferAttributes,
+  Color,
 } from "three";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useUser } from "@/hooks/useZustand";
+import { useUser, subNestedKey } from "@/hooks/useZustand";
+import { deepEqual } from "fast-equals";
 
 export default function SoundSource({ index }: { index: number }) {
-  const osc = useUser((s) => s.osc);
   const sourceFade = useUser((s) => s.sourceFade);
-  useEffect(() => {
-    if (useUser.getState().sourceColor[index]) return;
-    useUser
-      .getState()
-      .setNestedZus("sourceColor", index, { r: 255, g: 255, b: 255, a: 1 });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (!osc) return;
-    const xyz = osc.on(
-      "/source/" + index + "/xyz",
-      (message: { args: Array<number> }) => {
-        vec.current.fromArray([
-          message.args[0],
-          message.args[2],
-          -message.args[1],
-        ]);
-      }
-    );
-    const color = osc.on(
-      "/source/" + index + "/color",
-      (message: { args: any }) => {
-        useUser.getState().setNestedZus("sourceColor", index, {
-          r: Math.round(message.args[0] * 255),
-          g: Math.round(message.args[1] * 255),
-          b: Math.round(message.args[2] * 255),
-          a: message.args[3],
-        });
-      }
-    );
-    return () => {
-      osc.off("/source/" + index + "/xyz", xyz);
-      osc.off("/source/" + index + "/color", color);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [osc]);
-
   const ball = useRef<Mesh<BufferGeometry<NormalBufferAttributes>> | null>(
     null
   );
   const mat = useRef<MeshPhongMaterial | null>(null);
-  const vec = useRef<Vector3>(
+  const posVec = useRef<Vector3>(
     new Vector3(...[Math.random() * 5, Math.random() * 5, Math.random() * 5])
   );
-  const sourceColor = useUser((s) => s.sourceColor[index]);
-  const color = useMemo(
-    () => `rgb(${sourceColor?.r}, ${sourceColor?.g}, ${sourceColor?.b})`,
-    [sourceColor]
-  );
+  const color = useRef(new Color());
+  const alpha = useRef(1);
+  const newColor = useRef([0, 0, 0]);
+  const newPos = useRef([
+    Math.random() * 5,
+    Math.random() * 5,
+    Math.random() * 5,
+  ]);
 
   useEffect(() => {
-    if (!mat.current) return;
-    if (sourceFade === false) mat.current.opacity = 1;
-  }, [sourceFade]);
+    if (!useUser.getState().sourceColor[index]) {
+      useUser.getState().setNestedZus("sourceColor", index, [1, 1, 1]);
+    }
+    if (!useUser.getState().sourcePos[index]) {
+      useUser
+        .getState()
+        .setNestedZus("sourcePos", index, [
+          Math.random() * 5,
+          Math.random() * 5,
+          Math.random() * 5,
+        ]);
+    }
+    if (!useUser.getState().sourceAlpha[index]) {
+      useUser.getState().setNestedZus("sourceAlpha", index, 1);
+    }
+    if (useUser.getState().sourcePos[index]) {
+      newPos.current = useUser.getState().sourcePos[index];
+    }
+    if (!useUser.getState().sourceAlpha[index]) {
+      useUser.getState().setNestedZus("sourceAlpha", index, 1);
+    }
+    if (useUser.getState().sourceAlpha[index]) {
+      alpha.current = useUser.getState().sourceAlpha[index];
+    }
+    subNestedKey(useUser, newColor, "sourceColor", index);
+    subNestedKey(useUser, newPos, "sourcePos", index);
+    subNestedKey(useUser, alpha, "sourceAlpha", index);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
+  // useEffect(() => {
+  //   if (!mat.current) return;
+  //   if (sourceFade === false) mat.current.opacity = alpha.current;
+  // }, [sourceFade]);
+
+  // Limiting Changes to Frame Rate
   useFrame((_, delta) => {
-    if (!ball.current || !mat.current) return;
-    if (sourceFade && mat.current.opacity > 0) {
+    if (!ball.current || !mat.current || !color.current) return;
+    // Color Check
+    if (
+      !deepEqual(color.current.toArray(), newColor.current) &&
+      newColor.current
+    ) {
+      color.current.fromArray(newColor.current);
+    }
+    // Position Check
+    if (
+      !deepEqual(newPos.current, ball.current.position.toArray()) &&
+      newPos.current
+    ) {
+      posVec.current.fromArray(newPos.current);
+    }
+
+    // Alpha Check
+    const alphaCheck = () => {
+      if (!mat.current) return;
+      if (!(mat.current.opacity === alpha.current)) {
+        if (
+          mat.current.opacity > alpha.current &&
+          mat.current.opacity - alpha.current < 0.1
+        )
+          mat.current.opacity = alpha.current;
+        if (
+          mat.current.opacity < alpha.current &&
+          mat.current.opacity - alpha.current > -0.1
+        )
+          mat.current.opacity = alpha.current;
+        if (
+          mat.current.opacity > alpha.current &&
+          mat.current.opacity - alpha.current > 0.1
+        )
+          mat.current.opacity -= 0.1;
+        if (
+          mat.current.opacity < alpha.current &&
+          mat.current.opacity - alpha.current < -0.1
+        )
+          mat.current.opacity += 0.1;
+      }
+    };
+
+    // Note: Lerping here only works from Color/Vector3
+    // I would refrain from creating new Vector3/Color so there is a useRef with Vector3/Color inside
+    // That is Changed / Compared instead
+
+    // Source Fade
+    if (
+      sourceFade &&
+      mat.current.opacity > 0 &&
+      posVec.current.equals(ball.current.position)
+    ) {
       mat.current.opacity -= 0.1;
     }
+    if (posVec.current.equals(ball.current.position) && !sourceFade)
+      alphaCheck();
 
+    // Display source once it starts moving
     if (
-      !vec.current.equals(ball.current.position) &&
+      !posVec.current.equals(ball.current.position) &&
       !(mat.current.opacity > 0)
     ) {
-      ball.current.position.copy(vec.current);
-      mat.current.opacity = sourceColor?.a ? sourceColor?.a : 1;
+      ball.current.position.copy(posVec.current);
+      // Alpha Check
+      if (!(mat.current.opacity === alpha.current)) {
+        if (
+          mat.current.opacity < alpha.current &&
+          mat.current.opacity - alpha.current > -0.1
+        )
+          mat.current.opacity = alpha.current;
+        if (
+          mat.current.opacity < alpha.current &&
+          mat.current.opacity - alpha.current < -0.1
+        )
+          mat.current.opacity += 0.1;
+      }
       return;
     }
-    if (!vec.current.equals(ball.current.position)) {
+
+    // Move to new position
+    if (!posVec.current.equals(ball.current.position)) {
       // if lerp factor < 0.5, it will never converge to final position, but if it's > 0.5 it looks sluggish,
       // hence the distance check to change the lerp factor
-      if (ball.current.position.distanceTo(vec.current) > 0.001) {
-        ball.current.position.lerp(vec.current, 0.1);
+      if (ball.current.position.distanceTo(posVec.current) > 0.001) {
+        ball.current.position.lerp(posVec.current, 0.1);
       } else {
-        ball.current.position.lerp(vec.current, 0.6);
+        ball.current.position.lerp(posVec.current, 0.6);
       }
-      mat.current.opacity = sourceColor?.a ? sourceColor?.a : 1;
+      alphaCheck();
+    }
+
+    // Move to new color
+    if (!color.current.equals(mat.current.color)) {
+      // if lerp factor < 0.5, it will never converge to final position, but if it's > 0.5 it looks sluggish,
+      // hence the distance check to change the lerp factor
+      mat.current.color.lerp(color.current, 0.3);
+      // mat.current.opacity = newColor.current?.a ? newColor.current?.a : 1;
     }
   });
 
   return (
     <mesh ref={ball}>
       <sphereGeometry args={[0.05, 32, 16]} />
-      <meshPhongMaterial ref={mat} transparent={true} color={color} />
+      <meshPhongMaterial ref={mat} transparent={true} />
     </mesh>
   );
 }

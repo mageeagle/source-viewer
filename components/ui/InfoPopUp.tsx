@@ -46,6 +46,7 @@ export default function InfoPopUp() {
             {section === 3 && (
               <ColorPickerGroup
                 colorKey={"sourceColor"}
+                alphaKey={"sourceAlpha"}
                 maxSource={sourceNo}
                 name="Source"
                 addClass="grid justify-items-end"
@@ -54,6 +55,7 @@ export default function InfoPopUp() {
             {section === 4 && (
               <ColorPickerGroup
                 colorKey={"speakerColor"}
+                alphaKey={"speakerAlpha"}
                 maxSource={speakerNo}
                 name="Speaker"
                 addClass="grid justify-items-end"

@@ -4,89 +4,129 @@ import {
   Mesh,
   BufferGeometry,
   NormalBufferAttributes,
+  Color,
 } from "three";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useUser } from "@/hooks/useZustand";
+import { useUser, subNestedKey } from "@/hooks/useZustand";
+import { deepEqual } from "fast-equals";
 
 export default function SpeakerSource({ index }: { index: number }) {
-  const osc = useUser((s) => s.osc);
+  const box = useRef<Mesh<BufferGeometry<NormalBufferAttributes>> | null>(null);
+  const mat = useRef<MeshPhongMaterial | null>(null);
+  const posVec = useRef<Vector3>(
+    new Vector3(...[Math.random() * 5, Math.random() * 5, Math.random() * 5])
+  );
+  const color = useRef(new Color());
+  const alpha = useRef(1);
+  const newColor = useRef([1, 1, 1]);
+  const newPos = useRef([
+    Math.random() * 5,
+    Math.random() * 5,
+    Math.random() * 5,
+  ]);
+
   useEffect(() => {
-    if (useUser.getState().speakerColor[index]) return;
-    useUser
-      .getState()
-      .setNestedZus("speakerColor", index, { r: 125, g: 125, b: 125, a: 1 });
+    if (!useUser.getState().speakerColor[index]) {
+      useUser.getState().setNestedZus("speakerColor", index, [1, 1, 1]);
+    }
+    if (useUser.getState().speakerColor[index]) {
+      newColor.current = [...Object.values(useUser.getState().speakerColor[index])]
+    }
+    if (!useUser.getState().speakerPos[index]) {
+      useUser
+        .getState()
+        .setNestedZus("speakerPos", index, [
+          Math.random() * 5,
+          Math.random() * 5,
+          Math.random() * 5,
+        ]);
+    }
+    if (useUser.getState().speakerPos[index]) {
+      newPos.current = useUser.getState().speakerPos[index]
+    }
+    if (!useUser.getState().speakerAlpha[index]) {
+      useUser.getState().setNestedZus("speakerAlpha", index, 1);
+    }
+    if (useUser.getState().speakerAlpha[index]) {
+      alpha.current = useUser.getState().speakerAlpha[index]
+    }
+    subNestedKey(useUser, newColor, "speakerColor", index);
+    subNestedKey(useUser, newPos, "speakerPos", index);
+    subNestedKey(useUser, alpha, "speakerAlpha", index);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (!osc) return;
-    const xyz = osc.on(
-      "/speaker/" + index + "/xyz",
-      (message: { args: any }) => {
-        vec.current.fromArray([
-          message.args[0],
-          message.args[2],
-          -message.args[1],
-        ]);
-      }
-    );
-    const color = osc.on(
-      "/speaker/" + index + "/color",
-      (message: { args: any }) => {
-        useUser.getState().setNestedZus("speakerColor", index, {
-          r: Math.round(message.args[0] * 255),
-          g: Math.round(message.args[1] * 255),
-          b: Math.round(message.args[2] * 255),
-          a: message.args[3],
-        });
-      }
-    );
-    return () => {
-      osc.off("/speaker/" + index + "/xyz", xyz);
-      osc.off("/speaker/" + index + "/color", color);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [osc]);
+  // Limiting Changes to Frame Rate
+  useFrame((_, delta) => {
+    if (!box.current || !mat.current || !color.current) return;
+    // Color Check
+    if (!deepEqual(color.current.toArray(), newColor.current)) {
+      color.current.fromArray(newColor.current);
+    }
 
-  const box = useRef<Mesh<BufferGeometry<NormalBufferAttributes>> | null>(null);
-  const mat = useRef<MeshPhongMaterial | null>(null);
-  const vec = useRef<Vector3>(
-    new Vector3(...[Math.random() * 5, Math.random() * 5, Math.random() * 5])
-  );
-  const speakerColor = useUser((s) => s.speakerColor[index]);
-  const color = useMemo(
-    () => `rgb(${speakerColor?.r}, ${speakerColor?.g}, ${speakerColor?.b})`,
-    [speakerColor]
-  );
+    // Position Check
+    if (!deepEqual(newPos.current, box.current.position.toArray())) {
+      posVec.current.fromArray(newPos.current);
+    }
 
-  // Randomize Starting Point to avoid Clash and Lag during initialization
-  // const vec = new Vector3(Math.random() * 100, Math.random() * 100, Math.random() * 100)
-  useFrame(() => {
-    if (!box.current || !mat.current) return;
-    mat.current.opacity = speakerColor?.a ? speakerColor?.a : 1;
+    // Note: Lerping here only works from Color/Vector3
+    // I would refrain from creating new Vector3/Color so there is a useRef with Vector3/Color inside
+    // That is Changed / Compared instead
+
+    // Display source once it starts moving
     if (
-      !vec.current.equals(box.current.position) &&
+      !posVec.current.equals(box.current.position) &&
       !(mat.current.opacity > 0)
     ) {
-      box.current.position.copy(vec.current);
+      box.current.position.copy(posVec.current);
       return;
     }
-    if (!vec.current.equals(box.current.position)) {
+    // Move to new position
+    if (!posVec.current.equals(box.current.position)) {
       // if lerp factor < 0.5, it will never converge to final position, but if it's > 0.5 it looks sluggish,
       // hence the distance check to change the lerp factor
-      if (box.current.position.distanceTo(vec.current) > 0.001) {
-        box.current.position.lerp(vec.current, 0.1);
+      if (box.current.position.distanceTo(posVec.current) > 0.001) {
+        box.current.position.lerp(posVec.current, 0.1);
       } else {
-        box.current.position.lerp(vec.current, 0.6);
+        box.current.position.lerp(posVec.current, 0.6);
       }
     }
+    // Move to new alpha
+    if (!(mat.current.opacity === alpha.current)) {
+      if (
+        mat.current.opacity > alpha.current &&
+        mat.current.opacity - alpha.current < 0.1
+      )
+        mat.current.opacity = alpha.current;
+      if (
+        mat.current.opacity < alpha.current &&
+        mat.current.opacity - alpha.current > -0.1
+      )
+        mat.current.opacity = alpha.current;
+      if (
+        mat.current.opacity > alpha.current &&
+        mat.current.opacity - alpha.current > 0.1
+      )
+        mat.current.opacity -= 0.1;
+      if (
+        mat.current.opacity < alpha.current &&
+        mat.current.opacity - alpha.current < -0.1
+      )
+        mat.current.opacity += 0.1;
+    }
+    // Move to new color
+    if (!color.current.equals(mat.current.color)) {
+      // if lerp factor < 0.5, it will never converge to final position, but if it's > 0.5 it looks sluggish,
+      // hence the distance check to change the lerp factor
+      mat.current.color.lerp(color.current, 0.3);
+      // mat.current.opacity = newColor.current?.a ? newColor.current?.a : 1;
+    }
   });
-
   return (
     <mesh ref={box}>
       <boxGeometry args={[0.1, 0.1, 0.1]} />
-      <meshPhongMaterial ref={mat} transparent={true} color={color} />
+      <meshPhongMaterial ref={mat} transparent={true} />
     </mesh>
   );
 }
