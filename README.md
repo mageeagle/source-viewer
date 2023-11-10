@@ -34,4 +34,20 @@ Number of Source/Speakers displayed
 ```
 Note: Coordinate and Quaternion formats follow the format in SPAT5.
 
-Tip for broadcasting to multiple devices: Source/Speaker Numbers and Colors are not saved across sessions and different devices. To keep consistancy, the data could be saved on the server and sent to new devices connected to the WebSocket server. This is out of scope of this Front-End Interface. Please refer to the examples.
+### Example
+https://github.com/mageeagle/source-viewer-example
+
+### Tips
+
+#### Performance Issues
+The default page of the viewer uses InstancedMesh, which allows a large amount of source/speakers to be viewed at once without noticeable performance issues, 
+at the cost of individual source opacity options and fading away if they are not moving.
+
+Another page can be accessed to enable individual opacity changes and source fading, but large amount of source/speakers would cause performance issues.
+
+
+#### Broadcasting to multiple devices
+Source/Speaker Numbers and Colors are not saved across sessions and different devices. To keep consistancy, the data could be saved on the server and sent to new devices connected to the WebSocket server. This is out of scope of this Front-End Interface. Please refer to the examples.
+
+### Future Plans
+Add support for VR

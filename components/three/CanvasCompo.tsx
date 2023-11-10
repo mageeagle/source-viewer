@@ -5,15 +5,17 @@ import {
   AdaptiveDpr,
 } from "@react-three/drei";
 import Player from "./Player";
-import SourceArray from "./SourceArray";
 import { useUser } from "@/hooks/useZustand";
-import SpeakerArray from "./SpeakerArray";
 
-export default function CanvasCompo() {
+export default function CanvasCompo({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const bgColor = useUser((s) => s.bgColor);
   return (
     <Canvas
-      camera={{ fov: 45, far: 50000, position: [0, 100, 0] }}
+      camera={{ fov: 45, near: 0.000001, far: 50000, position: [0, 100, 0] }}
       gl={{ alpha: false }}
       shadows
     >
@@ -23,8 +25,7 @@ export default function CanvasCompo() {
       {/* <Sky distance={450000} sunPosition={[0, 1, 0]} inclination={0} azimuth={0.25} /> */}
       <ambientLight intensity={1} color={"white"} />
       <Player />
-      <SourceArray />
-      <SpeakerArray />
+      {children}
       <directionalLight color="white" position={[10000, 10000, 10000]} />
     </Canvas>
   );

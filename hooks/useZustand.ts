@@ -4,6 +4,7 @@ import { produce } from "immer";
 // import { shallow } from 'zustand/shallow'
 import OSC from "osc-js";
 import { MutableRefObject } from "react";
+import { Color, InstancedMesh, Vector, Vector3 } from "three";
 
 // Spread an array of keys into shallow: Depreciated, use useShallow
 // export const sprArr = (arr: Array<any>) => {
@@ -37,14 +38,16 @@ export const subNestedKey = (
 interface StoreState {
   bgColor: string;
   sourceColor: {
-    [index: number]: { r: number; g: number; b: number };
+    [index: number]: Color;
   };
   speakerColor: {
-    [index: number]: { r: number; g: number; b: number };
+    [index: number]: Color;
   };
-  speakerAlpha: { [index: number]: number };
-  sourceAlpha: { [index: number]: number };
+  speakerAlpha: { [index: number]: Vector3 };
+  sourceAlpha: { [index: number]: Vector3 };
   osc: OSC | null;
+  sourceRef: InstancedMesh | null;
+  speakerRef: InstancedMesh | null;
   initialized: boolean;
   started: boolean;
   about: boolean;
@@ -52,8 +55,8 @@ interface StoreState {
   port: number;
   pos: Array<number>;
   dir: Array<number>;
-  speakerPos: { [index: number]: Array<number> };
-  sourcePos: { [index: number]: Array<number> };
+  speakerPos: { [index: number]: Vector3 };
+  sourcePos: { [index: number]: Vector3 };
   sourceNo: number;
   speakerNo: number;
   god: boolean;
@@ -113,6 +116,8 @@ const user = {
   speakerColor: {},
   sourceAlpha: {},
   speakerAlpha: {},
+  sourceRef: null,
+  speakerRef: null,
   bgColor: "Black",
 };
 

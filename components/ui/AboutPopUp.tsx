@@ -6,14 +6,14 @@ import { bottomRight, topWhiteText } from "../../constants/styles";
 import Connection from "./Connection";
 import { useShallow } from "zustand/react/shallow";
 
-function AboutPopUp() {
+function AboutPopUp({ noFade }: { noFade?: boolean }) {
   const [about, init, started] = useUser(
     useShallow((s) => [s.about, s.init, s.started])
   );
 
   return (
     <>
-      {about ? <InfoPopUp /> : null}
+      {about ? <InfoPopUp noFade={noFade} /> : null}
       {about || !started ? null : (
         <div className={bottomRight + " z-50"}>
           <InfoButton />

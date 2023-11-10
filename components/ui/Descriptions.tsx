@@ -1,7 +1,8 @@
 "use client";
+import Link from "next/link";
 import { titleClass } from "../../constants/styles";
 
-export default function Description() {
+export default function Description({ noFade }: { noFade?: boolean }) {
   return (
     <div className="max-w-screen ml-4">
       <div className={titleClass}> Source Viewer </div>
@@ -27,6 +28,35 @@ export default function Description() {
             Website
           </a>
         </p>
+        <br />
+        {noFade ? (
+          <>
+            <p>
+              Individual Opacity Settings are disabled in this version in exchange for better
+              performance.
+            </p>
+            <p>
+              {"Use this "}
+              <Link className="underline" href="/fade">
+                Version
+              </Link>{" "}
+              for Opacity Support and Source Fading.
+            </p>
+          </>
+        ) : (
+          <>
+            <p>
+              Opacity is enabled for source fading and opacity changing for individual sources/speakers.
+            </p>
+            <p>
+              {"Use this "}
+              <Link className="underline" href="/">
+                Version
+              </Link>{" "}
+              if you encounter performance issues.
+            </p>
+          </>
+        )}
       </div>
     </div>
   );

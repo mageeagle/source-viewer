@@ -1,15 +1,15 @@
 import CanvasCompo from "@/components/three/CanvasCompo";
-import InstancedSource from "@/components/three/InstancedSource";
-import InstancedSpeaker from "@/components/three/InstancedSpeaker";
+import SourceArray from "@/components/three/SourceArray";
+import SpeakerArray from "@/components/three/SpeakerArray";
 import AboutPopUp from "@/components/ui/AboutPopUp";
 
 export default function Home() {
   return (
     <>
-      <AboutPopUp noFade/>
+      <AboutPopUp />
       <CanvasCompo>
-        <InstancedSource />
-        <InstancedSpeaker />
+        <SourceArray />
+        <SpeakerArray />
       </CanvasCompo>
     </>
   );

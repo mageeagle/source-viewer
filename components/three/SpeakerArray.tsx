@@ -1,3 +1,4 @@
+"use client"
 import { useUser } from "@/hooks/useZustand";
 import React, { useEffect, useState } from "react";
 import SpeakerSource from "./SpeakerSource";

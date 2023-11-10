@@ -62,8 +62,8 @@ export default function Player() {
 
   const { fast, forward, backward, left, right, god, help, free } =
     usePlayerControls();
-  const [godMode, freeState, about, osc, setPos, started] = useUser(
-    useShallow((s) => [s.god, s.free, s.about, s.osc, s.setPos, s.started])
+  const [godMode, freeState, about, osc, setPos, started, connected] = useUser(
+    useShallow((s) => [s.god, s.free, s.about, s.osc, s.setPos, s.started, s.connected])
   );
 
   // god mode toggle
@@ -86,6 +86,7 @@ export default function Player() {
     regainPointer();
     timeout.current = 0;
     camera.lookAt(0, 0, 0);
+    if (!connected) return;
     // return to origin
     const xyz = new OSC.Message("/listener/xyz", 0, 0, 0);
     const dir = new OSC.Message("/listener/orientation", 0, 0, 0, 1);
@@ -136,7 +137,7 @@ export default function Player() {
       // speed.current.fromArray(velocity.current)
       meshRef.current.position.add(direction.current);
     }
-    if (!osc || godMode) return;
+    if (!connected || godMode) return;
     const quat = camera.quaternion;
     const posVec = meshRef.current.position;
     setPos([posVec.x, posVec.y, posVec.z]);
@@ -150,7 +151,7 @@ export default function Player() {
       quat.w
     );
     const bundle = new OSC.Bundle(xyz, dir);
-    osc.send(bundle);
+    osc?.send(bundle);
   });
 
   return (
