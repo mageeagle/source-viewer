@@ -2,6 +2,8 @@
 
 ![](./docs/example.gif)
 
+[Live Demo Here](https://source-viewer.vercel.app/)
+
 Position Viewer in Browser for Object-Based Audio Spatialization via OSC, built with Next.js, Three.js (react-three-fiber) and osc-js.
 
 The interface allows the viewing of sound sources and speaker position in a 3D Environment / First Person View in the browser, and allows viewing / controlling listener position / orientation across a network from a server through WebSockets.
