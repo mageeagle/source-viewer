@@ -1,4 +1,4 @@
-## Source Viewer
+## 3D Source Visualizer for Spatial Audio
 
 ![](./docs/example.gif)
 
