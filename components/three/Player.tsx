@@ -3,7 +3,8 @@ import { Vector3 } from "three";
 import { useUser } from "../../hooks/useZustand";
 import { useEffect, useRef, useState } from "react";
 import { useThree, useFrame } from "@react-three/fiber";
-import { PointerLockControls, OrbitControls } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
+import PointerLockControls from "./PointerLockControls"
 import { Mesh, BufferGeometry, NormalBufferAttributes } from "three";
 import { useShallow } from "zustand/react/shallow";
 import regainPointer from "@/helpers/regainPointer";
@@ -22,7 +23,7 @@ const keys = {
 };
 const moveFieldByKey = (key: keyof typeof keys) => keys[key];
 // Distance from the ground from god view
-const topView = new Vector3(0, 20, 0);
+const topView = new Vector3(0, 0, 100);
 const lock = new Vector3(0, 0, 0);
 const front = new Vector3(0, 0, -1);
 const usePlayerControls = () => {
@@ -133,7 +134,7 @@ export default function Player() {
         .normalize()
         .multiplyScalar(fast ? SPEED * 4 : SPEED)
         .applyEuler(camera.rotation);
-      direction.current.y = 0;
+      direction.current.z = 0;
       // speed.current.fromArray(velocity.current)
       meshRef.current.position.add(direction.current);
     }
@@ -142,12 +143,18 @@ export default function Player() {
     const posVec = meshRef.current.position;
     setPos([posVec.x, posVec.y, posVec.z]);
     // Change to SPAT XYZ convention
-    const xyz = new OSC.Message("/listener/xyz", posVec.x, -posVec.z, posVec.y);
+    const xyz = new OSC.Message("/listener/xyz", posVec.x, posVec.y, posVec.z);
+    // For some reason x and z has to be negated, I didn't do calculations since I don't fully understand them
+    // Right now the rotation on the XY plane is definitely correct, just not sure for the vertical axis
     const dir = new OSC.Message(
       "/listener/orientation",
+      // -quat.z,
+      // quat.x,
+      // -quat.y,
+      // quat.w
+      -quat.x,
+      quat.y,
       -quat.z,
-      quat.x,
-      -quat.y,
       quat.w
     );
     const bundle = new OSC.Bundle(xyz, dir);
