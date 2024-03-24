@@ -27,7 +27,8 @@ export default function OscClient() {
       "/source/*/xyz",
       (message: { address: string; args: Array<number> }) => {
         const index = Number(message.address.split("/")[2]);
-        const newPos = [message.args[0], message.args[2], -message.args[1]];
+        // const newPos = [message.args[0], message.args[2], -message.args[1]];
+        const newPos = [message.args[0], message.args[1], message.args[2]];
         // Position Check
         const pos = useUser.getState().sourcePos[index];
         if (!pos) return;
@@ -41,7 +42,8 @@ export default function OscClient() {
       "/speaker/*/xyz",
       (message: { address: string; args: Array<number> }) => {
         const index = Number(message.address.split("/")[2]);
-        const newPos = [message.args[0], message.args[2], -message.args[1]];
+        // const newPos = [message.args[0], message.args[2], -message.args[1]];
+        const newPos = [message.args[0], message.args[1], message.args[2]];
         // Position Check
         const pos = useUser.getState().speakerPos[index];
         if (!pos) return;
@@ -88,7 +90,7 @@ export default function OscClient() {
 
   useEffect(() => {
     if (!started || !oscState) return;
-    oscState.open({ host: host, port: port });
+    oscState.open({ host: host, port: port, secure: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [started]);
 
