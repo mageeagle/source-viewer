@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import AboutPopUp from "@/components/ui/AboutPopUp";
+import AboutPopUp from "@/components/ui/InfoOverlay";
 import OscClient from "@/components/osc/OscClient";
 
 // const inter = Inter({ subsets: ['latin'] })

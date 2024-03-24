@@ -62,8 +62,24 @@ interface StoreState {
   god: boolean;
   free: boolean;
   connected: boolean;
+  displayInterface: boolean;
   infoSection: number;
   sourceFade: boolean;
+  axisToggle: boolean;
+  gridXToggle: boolean;
+  gridYToggle: boolean;
+  gridZToggle: boolean;
+  gridXInf: boolean;
+  gridYInf: boolean;
+  gridZInf: boolean;
+  gridPosX: [number, number, number];
+  gridPosY: [number, number, number];
+  gridPosZ: [number, number, number];
+  gridSize: number;
+  sectionSize:number
+  subGridSize: number;
+  gridColor: string;
+  subGridColor: string;
   start: () => void;
   reset: () => void;
   init: () => void;
@@ -90,6 +106,7 @@ interface StoreState {
   setBgColor: (color: string) => void;
   toggleSourceFade: () => void;
   setZus: (key: string | number, hi: any) => void;
+  toggleZus: (key: string | number) => void;
   setNestedZus: (key1: string | number, key2: string | number, hi: any) => void;
 }
 
@@ -103,11 +120,27 @@ const user = {
   about: false,
   sourceFade: true,
   connected: false,
+  displayInterface: true,
   infoSection: 1,
   ip: "localhost",
   port: 8080,
   pos: [0, 0, 0],
   dir: [0, 0, 0],
+  axisToggle: true,
+  gridXToggle: false,
+  gridYToggle: false,
+  gridZToggle: false,
+  gridXInf: false,
+  gridYInf: false,
+  gridZInf: false,
+  gridPosX: [0, 0, 0] as [number, number, number],
+  gridPosY: [0, 0, 0] as [number, number, number],
+  gridPosZ: [0, 0, 0] as [number, number, number],
+  gridSize: 10,
+  sectionSize: 1,
+  subGridSize: 0.5,
+  gridColor: 'White',
+  subGridColor: 'Grey',
   sourceNo: 1,
   speakerNo: 0,
   sourcePos: {},
@@ -137,6 +170,7 @@ export const useUser = create<StoreState>()(
     setSourceNo: (sourceNo) => set(() => ({ sourceNo: sourceNo })),
     setSpeakerNo: (speakerNo) => set(() => ({ speakerNo: speakerNo })),
     setZus: (key, hi) => set(() => ({ [key]: hi })),
+    toggleZus: (key) => set((s) => ({ [key]: !s[key as keyof typeof user] })),
     setNestedZus: (key1, key2, hi) =>
       set(
         produce((state) => {

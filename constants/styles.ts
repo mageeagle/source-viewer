@@ -14,7 +14,7 @@ export const normalTextClass =
   "py-4 text-base leading-7 space-y-6 text-gray-600";
 export const inputClass =
   "border-gray-200 border-2 rounded-md mr-2 w-full p-1 dark:bg-slate-700";
-export const smallInputClass = "w-10 border-2 rounded-md text-black p-1";
+export const smallInputClass = "w-16 border-2 rounded-md text-black p-1";
 export const titleClass = "font-semibold md:text-xl text-base";
 export const innerWrapper =
   "relative pt-10 pb-8 bg-white dark:bg-slate-800 shadow-xl max-w-fit mx-auto rounded-lg px-6";

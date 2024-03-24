@@ -3,22 +3,38 @@ import { Canvas } from "@react-three/fiber";
 import {
   AdaptiveEvents,
   AdaptiveDpr,
+  OrthographicCamera,
+  GizmoViewport,
+  GizmoHelper,
 } from "@react-three/drei";
 import Player from "./Player";
 import { useUser } from "@/hooks/useZustand";
+import * as THREE from "three";
+import GridOverlay from "./GridOverlay";
+
+THREE.Object3D.DEFAULT_UP = new THREE.Vector3(0, 0, 1);
 
 export default function CanvasCompo({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   const bgColor = useUser((s) => s.bgColor);
+  const axisToggle = useUser((s) => s.axisToggle);
   return (
     <Canvas
-      camera={{ fov: 45, near: 0.000001, far: 50000, position: [0, 100, 0] }}
+      camera={{ fov: 45, near: 0.000001, far: 50000, position: [0, 0, 20] }}
       gl={{ alpha: false }}
       shadows
     >
+      {axisToggle && <axesHelper args={[2]} />}
+      {/* <OrthographicCamera
+        makeDefault
+        zoom={100}
+        near={0.1}
+        far={2000}
+        position={[0, 0, 300]}
+      /> */}
       <color attach="background" args={[bgColor]} />
       <AdaptiveDpr pixelated />
       <AdaptiveEvents />
@@ -27,6 +43,10 @@ export default function CanvasCompo({
       <Player />
       {children}
       <directionalLight color="white" position={[10000, 10000, 10000]} />
+      <GridOverlay />
+      <GizmoHelper alignment="bottom-left" margin={[100, 100]}>
+        <GizmoViewport />
+      </GizmoHelper>
     </Canvas>
   );
 }
