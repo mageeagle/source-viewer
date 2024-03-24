@@ -5,12 +5,19 @@ import {
   BufferGeometry,
   NormalBufferAttributes,
   Color,
+  Object3D,
 } from "three";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useUser } from "@/hooks/useZustand";
+import { subKey, useUser } from "@/hooks/useZustand";
 
-export default function SoundSource({ index }: { index: number }) {
+export default function SoundSource({
+  index,
+  editor,
+}: {
+  index: number;
+  editor?: boolean;
+}) {
   const sourceFade = useUser((s) => s.sourceFade);
   const ball = useRef<Mesh<BufferGeometry<NormalBufferAttributes>> | null>(
     null
@@ -22,12 +29,16 @@ export default function SoundSource({ index }: { index: number }) {
   const color = useRef(new Color());
   // Workaround to avoid setting state for OSC
   const alpha = useRef(new Vector3(1, 1, 1));
+  const activeID = useRef(useUser.getState().activeID);
+  const activeGroup = useRef(useUser.getState().activeGroup);
 
   useEffect(() => {
     const setZus = useUser.getState().setNestedZus;
     setZus("sourceColor", index, color.current);
     setZus("sourcePos", index, posVec.current);
     setZus("sourceAlpha", index, alpha.current);
+    subKey(useUser, activeID, "activeID");
+    subKey(useUser, activeGroup, "activeGroup");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -66,41 +77,45 @@ export default function SoundSource({ index }: { index: number }) {
     // That is Changed / Compared instead
 
     // Source Fade
-    if (
-      sourceFade &&
-      mat.current.opacity > 0 &&
-      posVec.current.equals(ball.current.position)
-    ) {
-      mat.current.opacity -= 0.1;
-    }
-    if (posVec.current.equals(ball.current.position) && !sourceFade)
-      alphaCheck();
+    if (!editor) {
+      if (
+        sourceFade &&
+        mat.current.opacity > 0 &&
+        posVec.current.equals(ball.current.position)
+      ) {
+        mat.current.opacity -= 0.1;
+      }
+      if (posVec.current.equals(ball.current.position) && !sourceFade)
+        alphaCheck();
 
-    // Display source once it starts moving
+      // Display source once it starts moving
+      if (
+        !posVec.current.equals(ball.current.position) &&
+        !(mat.current.opacity > 0)
+      ) {
+        ball.current.position.lerp(posVec.current, 0.1);
+        // Alpha Check
+        if (!(mat.current.opacity === alpha.current.x)) {
+          if (
+            mat.current.opacity < alpha.current.x &&
+            mat.current.opacity - alpha.current.x > -0.1
+          )
+            mat.current.opacity = alpha.current.x;
+          if (
+            mat.current.opacity < alpha.current.x &&
+            mat.current.opacity - alpha.current.x < -0.1
+          )
+            mat.current.opacity += 0.1;
+        }
+        return;
+      }
+    }
+    // Move to new position
     if (
       !posVec.current.equals(ball.current.position) &&
-      !(mat.current.opacity > 0)
+      !(activeID.current === index && activeGroup.current === "source")
     ) {
-      ball.current.position.lerp(posVec.current, 0.1);
-      // Alpha Check
-      if (!(mat.current.opacity === alpha.current.x)) {
-        if (
-          mat.current.opacity < alpha.current.x &&
-          mat.current.opacity - alpha.current.x > -0.1
-        )
-          mat.current.opacity = alpha.current.x;
-        if (
-          mat.current.opacity < alpha.current.x &&
-          mat.current.opacity - alpha.current.x < -0.1
-        )
-          mat.current.opacity += 0.1;
-      }
-      return;
-    }
-
-    // Move to new position
-    if (!posVec.current.equals(ball.current.position)) {
-      alphaCheck();
+      if (!editor) alphaCheck();
       // if lerp factor < 0.5, it will never converge to final position, but if it's > 0.5 it looks sluggish,
       // hence the distance check to change the lerp factor
       if (ball.current.position.distanceTo(posVec.current) > 0.001) {
@@ -116,12 +131,23 @@ export default function SoundSource({ index }: { index: number }) {
       // hence the distance check to change the lerp factor
       mat.current.color.lerp(color.current, 0.3);
     }
+    if (activeID.current === index && activeGroup.current === "source") {
+      posVec.current.copy(ball.current.position);
+    }
   });
+  const click = useCallback(() => {
+    useUser.getState().setZus("activeID", index);
+    useUser.getState().setZus("activeObj", ball.current);
+    useUser.getState().setZus("activeGroup", "source");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <mesh ref={ball} frustumCulled={false}>
-      <sphereGeometry args={[0.05, 32, 16]} />
-      <meshPhongMaterial ref={mat} transparent={true} />
-    </mesh>
+    <>
+      <mesh ref={ball} frustumCulled={false} onClick={click}>
+        <sphereGeometry args={[0.05, 32, 16]} />
+        <meshPhongMaterial ref={mat} transparent={!editor} />
+      </mesh>
+    </>
   );
 }

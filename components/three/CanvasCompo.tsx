@@ -11,6 +11,7 @@ import Player from "./Player";
 import { useUser } from "@/hooks/useZustand";
 import * as THREE from "three";
 import GridOverlay from "./GridOverlay";
+import Transformer from "./Transformer";
 
 THREE.Object3D.DEFAULT_UP = new THREE.Vector3(0, 0, 1);
 
@@ -47,6 +48,7 @@ export default function CanvasCompo({
       <GizmoHelper alignment="bottom-left" margin={[100, 100]}>
         <GizmoViewport />
       </GizmoHelper>
+      <Transformer />
     </Canvas>
   );
 }

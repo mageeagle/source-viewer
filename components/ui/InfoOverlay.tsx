@@ -6,15 +6,15 @@ import { bottomRight, topWhiteText } from "../../constants/styles";
 import Connection from "./Connection";
 import { useShallow } from "zustand/react/shallow";
 
-function AboutPopUp({ noFade }: { noFade?: boolean }) {
-  const [about, init, started] = useUser(
-    useShallow((s) => [s.about, s.init, s.started])
+function InfoOverlay({ noFade }: { noFade?: boolean }) {
+  const [about, displayInterface, started] = useUser(
+    useShallow((s) => [s.about, s.displayInterface, s.started])
   );
 
   return (
     <>
-      {about ? <InfoPopUp noFade={noFade} /> : null}
-      {about || !started ? null : (
+      {about && displayInterface ? <InfoPopUp noFade={noFade} /> : null}
+      {about || !displayInterface || !started ? null : (
         <div className={bottomRight + " z-50"}>
           <InfoButton />
         </div>
@@ -24,4 +24,4 @@ function AboutPopUp({ noFade }: { noFade?: boolean }) {
   );
 }
 
-export default AboutPopUp;
+export default InfoOverlay;

@@ -4,7 +4,7 @@ import { produce } from "immer";
 // import { shallow } from 'zustand/shallow'
 import OSC from "osc-js";
 import { MutableRefObject } from "react";
-import { Color, InstancedMesh, Vector, Vector3 } from "three";
+import { Color, InstancedMesh, Mesh, Object3D, Vector, Vector3 } from "three";
 
 // Spread an array of keys into shallow: Depreciated, use useShallow
 // export const sprArr = (arr: Array<any>) => {
@@ -76,10 +76,13 @@ interface StoreState {
   gridPosY: [number, number, number];
   gridPosZ: [number, number, number];
   gridSize: number;
-  sectionSize:number
+  sectionSize: number;
   subGridSize: number;
   gridColor: string;
   subGridColor: string;
+  activeID: number;
+  activeObj: Object3D | null;
+  activeGroup: string;
   start: () => void;
   reset: () => void;
   init: () => void;
@@ -139,8 +142,8 @@ const user = {
   gridSize: 10,
   sectionSize: 1,
   subGridSize: 0.5,
-  gridColor: 'White',
-  subGridColor: 'Grey',
+  gridColor: "White",
+  subGridColor: "Grey",
   sourceNo: 1,
   speakerNo: 0,
   sourcePos: {},
@@ -152,6 +155,9 @@ const user = {
   sourceRef: null,
   speakerRef: null,
   bgColor: "Black",
+  activeID: 0,
+  activeObj: null,
+  activeGroup: "source",
 };
 
 // Create the hook, with set functions
