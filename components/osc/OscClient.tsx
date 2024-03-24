@@ -90,7 +90,7 @@ export default function OscClient() {
 
   useEffect(() => {
     if (!started || !oscState) return;
-    oscState.open({ host: host, port: port });
+    oscState.open({ host: host, port: port, secure: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [started]);
 
