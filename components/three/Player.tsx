@@ -4,7 +4,7 @@ import { useUser } from "../../hooks/useZustand";
 import { useEffect, useRef, useState } from "react";
 import { useThree, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import PointerLockControls from "./PointerLockControls"
+import PointerLockControls from "./PointerLockControls";
 import { Mesh, BufferGeometry, NormalBufferAttributes } from "three";
 import { useShallow } from "zustand/react/shallow";
 import regainPointer from "@/helpers/regainPointer";
@@ -23,7 +23,7 @@ const keys = {
 };
 const moveFieldByKey = (key: keyof typeof keys) => keys[key];
 // Distance from the ground from god view
-const topView = new Vector3(0, 0, 100);
+const topView = new Vector3(0, 0, 20);
 const lock = new Vector3(0, 0, 0);
 const front = new Vector3(0, 0, -1);
 const usePlayerControls = () => {
@@ -64,7 +64,15 @@ export default function Player() {
   const { fast, forward, backward, left, right, god, help, free } =
     usePlayerControls();
   const [godMode, freeState, about, osc, setPos, started, connected] = useUser(
-    useShallow((s) => [s.god, s.free, s.about, s.osc, s.setPos, s.started, s.connected])
+    useShallow((s) => [
+      s.god,
+      s.free,
+      s.about,
+      s.osc,
+      s.setPos,
+      s.started,
+      s.connected,
+    ])
   );
 
   // god mode toggle
@@ -165,8 +173,8 @@ export default function Player() {
     <>
       <mesh position={[0, 0, 0]} ref={meshRef} visible={false} />
 
-      {godMode ? <OrbitControls /> : null}
-      {!godMode && !about && <PointerLockControls />}
+      {godMode ? <OrbitControls makeDefault /> : null}
+      {!godMode && !about && <PointerLockControls makeDefault />}
     </>
   );
 }

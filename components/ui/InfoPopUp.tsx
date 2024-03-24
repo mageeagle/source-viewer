@@ -11,9 +11,11 @@ import Descriptions from "./Descriptions";
 import { useUser } from "../../hooks/useZustand";
 import SectionSelector from "./SectionSelector";
 import ColorPickerGroup from "./ColorPickerGroup";
-import ColorPicker from "./ColorPicker";
+import ColorPickerBg from "./ColorPickerBg";
 import { useShallow } from "zustand/react/shallow";
 import Link from "next/link";
+import FunctionToggler from "./FunctionToggler";
+import { between } from "@/helpers/mathsHelper";
 
 const FadeToggle = () => {
   const [sourceFade, toggleSourceFade] = useUser(
@@ -43,9 +45,9 @@ export default function InfoPopUp({ noFade }: { noFade?: boolean }) {
       <div className="bottom-0 right-0 absolute grid grid-cols-1 justify-items-end text-gray-400 text-right">
         <div className="m-4 w-screen flex flex-row-reverse justify-items-end items-end">
           <div className="w-fit">
-            {section === 1 && <Descriptions noFade={noFade}/>}
+            {section === 1 && <Descriptions noFade={noFade} />}
             {section === 2 && <ControlsHelp />}
-            {section === 3 && (
+            {section === 5 && (
               <ColorPickerGroup
                 noFade={noFade}
                 colorKey={"sourceColor"}
@@ -56,7 +58,7 @@ export default function InfoPopUp({ noFade }: { noFade?: boolean }) {
                 addClass="grid justify-items-end"
               />
             )}
-            {section === 4 && (
+            {section === 6 && (
               <ColorPickerGroup
                 noFade={noFade}
                 colorKey={"speakerColor"}
@@ -67,27 +69,47 @@ export default function InfoPopUp({ noFade }: { noFade?: boolean }) {
                 addClass="grid justify-items-end"
               />
             )}
-            {section === 5 && <ColorPicker />}
+            {section === 7 && <ColorPickerBg />}
+            {section === 3 && <FunctionToggler />}
           </div>
-          {section === 3 && !noFade && <FadeToggle />}
+          {section === 5 && !noFade && <FadeToggle />}
         </div>
 
-        <div className="flex w-screen flex-wrap-reverse flex-row-reverse items-center">
+        <div className="flex lg:w-max w-screen flex-wrap-reverse flex-row-reverse items-center">
           <AboutClose />
           <div className="font-bold">
             {connected ? (
               " "
             ) : (
-              <div className={sectionClass} onClick={() => useUser.getState().setZus("started", false)}>
+              <div
+                className={sectionClass}
+                onClick={() => useUser.getState().setZus("started", false)}
+              >
                 Not Connected / Reconnect
               </div>
             )}
           </div>
-          <SectionSelector i={1} name="Description" />
-          <SectionSelector i={2} name="Controls" />
-          <SectionSelector i={3} name="Source Color Picker" />
-          <SectionSelector i={4} name="Speaker Color Picker" />
-          <SectionSelector i={5} name="Background Color Picker" />
+          {!between(section, 4, 7) &&
+            <>
+              <SectionSelector i={1} name="Description" />
+              <SectionSelector i={2} name="Controls" />
+              <SectionSelector i={4} name="Color Settings" />
+              <SectionSelector i={3} name="Grid Settings" />
+            </>
+          }
+          {between(section, 4, 7) && (
+            <>
+              <div
+                className={sectionClass}
+                onClick={() => useUser.getState().setZus("infoSection", 1)}
+              >
+                Back
+              </div>
+              <SectionSelector i={5} name="Source Color Picker" />
+              <SectionSelector i={6} name="Speaker Color Picker" />
+              <SectionSelector i={7} name="Background Color Picker" />
+            </>
+          )}
         </div>
       </div>
     </div>

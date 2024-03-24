@@ -1,12 +1,12 @@
 import CanvasCompo from "@/components/three/CanvasCompo";
 import SourceArray from "@/components/three/SourceArray";
 import SpeakerArray from "@/components/three/SpeakerArray";
-import AboutPopUp from "@/components/ui/AboutPopUp";
+import InfoOverlay from "@/components/ui/InfoOverlay";
 
 export default function Home() {
   return (
     <>
-      <AboutPopUp />
+      <InfoOverlay />
       <CanvasCompo>
         <SourceArray />
         <SpeakerArray />

@@ -1,7 +1,5 @@
 "use client";
-import {
-  smallInputClass,
-} from "@/constants/styles";
+import { smallInputClass } from "@/constants/styles";
 import { useEffect, useRef, useState } from "react";
 import { useUser } from "../../hooks/useZustand";
 import { RgbaColorPicker } from "react-colorful";
@@ -57,14 +55,15 @@ export default function ColorPickerGroup({
       )
     ) {
       for (let i = min; i <= max; i++) {
-        state[colorKey][i].fromArray([
-          sourceColor.r / 255,
-          sourceColor.g / 255,
-          sourceColor.b / 255,
-        ]);
-        
+        if (state[colorKey][i]) {
+          state[colorKey][i].fromArray([
+            sourceColor.r / 255,
+            sourceColor.g / 255,
+            sourceColor.b / 255,
+          ]);
+        }
       }
-      lastColor.current = [sourceColor.r, sourceColor.g, sourceColor.b]
+      lastColor.current = [sourceColor.r, sourceColor.g, sourceColor.b];
     }
     if (!noFade) {
       for (let x = min; x <= max; x++) state[alphaKey][x].setX(sourceColor.a);
@@ -85,13 +84,15 @@ export default function ColorPickerGroup({
         <input
           className={smallInputClass}
           value={sourceMin}
-          onChange={(e) => setSourceMin(Number(e.target.value))}
+          type="number"
+          onChange={(e) => setSourceMin(Math.round(Number(e.target.value)))}
         />{" "}
         to{" "}
         <input
           className={smallInputClass}
           value={sourceMax}
-          onChange={(e) => setSourceMax(Number(e.target.value))}
+          type="number"
+          onChange={(e) => setSourceMax(Math.round(Number(e.target.value)))}
         />{" "}
       </div>
       <RgbaColorPicker color={sourceColor} onChange={setSourceColor} />
