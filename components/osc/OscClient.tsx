@@ -3,6 +3,7 @@ import { setUser, useUser } from "@/hooks/useZustand";
 import { useEffect } from "react";
 import OSC from "osc-js";
 import { deepEqual } from "fast-equals";
+import { aed2xyz } from "@/helpers/mathsHelper";
 
 export default function OscClient() {
   const started = useUser((s) => s.started);
@@ -44,6 +45,36 @@ export default function OscClient() {
         const index = Number(message.address.split("/")[2]);
         // const newPos = [message.args[0], message.args[2], -message.args[1]];
         const newPos = [message.args[0], message.args[1], message.args[2]];
+        // Position Check
+        const pos = useUser.getState().speakerPos[index];
+        if (!pos) return;
+        if (!deepEqual(newPos, pos.toArray())) {
+          pos.fromArray(newPos);
+        }
+      }
+    );
+
+    osc.on(
+      "/source/*/aed",
+      (message: { address: string; args: Array<number> }) => {
+        const index = Number(message.address.split("/")[2]);
+        // const newPos = [message.args[0], message.args[2], -message.args[1]];
+        const newPos = aed2xyz([message.args[0], message.args[1], message.args[2]]);
+        // Position Check
+        const pos = useUser.getState().sourcePos[index];
+        if (!pos) return;
+        if (!deepEqual(newPos, pos.toArray())) {
+          pos.fromArray(newPos);
+        }
+      }
+    );
+
+    osc.on(
+      "/speaker/*/aed",
+      (message: { address: string; args: Array<number> }) => {
+        const index = Number(message.address.split("/")[2]);
+        // const newPos = [message.args[0], message.args[2], -message.args[1]];
+        const newPos = aed2xyz([message.args[0], message.args[1], message.args[2]]);
         // Position Check
         const pos = useUser.getState().speakerPos[index];
         if (!pos) return;
