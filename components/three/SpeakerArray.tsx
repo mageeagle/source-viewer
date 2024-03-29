@@ -1,9 +1,10 @@
-"use client"
+"use client";
 import { useUser } from "@/hooks/useZustand";
 import React, { useEffect, useState } from "react";
 import SpeakerSource from "./SpeakerSource";
 import { useShallow } from "zustand/react/shallow";
-function SpeakerArray() {
+
+function SpeakerArray({ editor }: { editor?: boolean }) {
   const started = useUser((s) => s.started);
   const [speakerArr, setSpeakerArr] = useState<Array<React.JSX.Element>>([]);
   const [speakerNo, setSpeakerNo] = useUser(
@@ -30,7 +31,7 @@ function SpeakerArray() {
     const out: Array<React.JSX.Element> = [];
     for (let i = speakerArr.length; i < speakerNo; i++) {
       const ind = i + 1;
-      out.push(<SpeakerSource index={ind} key={"speaker-" + ind} />);
+      out.push(<SpeakerSource index={ind} key={"speaker-" + ind} editor={editor}/>);
     }
     setSpeakerArr((s) => [...s, ...out]);
     // eslint-disable-next-line react-hooks/exhaustive-deps

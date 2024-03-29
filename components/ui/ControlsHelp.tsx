@@ -95,7 +95,13 @@ export default function ControlsHelp({ reverse }: { reverse?: boolean }) {
             />
             <Keyboard
               reverse
-              description="Open/Close Help and About"
+              description="Open/Close Info"
+              extraClass="font-bold"
+              keyIn="I"
+            />
+            <Keyboard
+              reverse
+              description="Display/Hide Interface"
               extraClass="font-bold"
               keyIn="H"
             />

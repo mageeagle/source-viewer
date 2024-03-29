@@ -1,6 +1,6 @@
 "use client";
 import { Vector3 } from "three";
-import { useUser } from "../../hooks/useZustand";
+import { setUser, useUser } from "../../hooks/useZustand";
 import { useEffect, useRef, useState } from "react";
 import { useThree, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
@@ -20,6 +20,7 @@ const keys = {
   KeyD: "right",
   Space: "fast",
   KeyH: "help",
+  KeyI: "disp",
 };
 const moveFieldByKey = (key: keyof typeof keys) => keys[key];
 // Distance from the ground from god view
@@ -36,6 +37,7 @@ const usePlayerControls = () => {
     right: false,
     fast: false,
     help: false,
+    disp: true,
   });
   useEffect(() => {
     const handleKeyDown = (e: { code: any }) =>
@@ -61,9 +63,18 @@ export default function Player() {
     null
   );
 
-  const { fast, forward, backward, left, right, god, help, free } =
+  const { fast, forward, backward, left, right, god, help, free, disp } =
     usePlayerControls();
-  const [godMode, freeState, about, osc, setPos, started, connected] = useUser(
+  const [
+    godMode,
+    freeState,
+    about,
+    osc,
+    setPos,
+    started,
+    connected,
+    displayInterface,
+  ] = useUser(
     useShallow((s) => [
       s.god,
       s.free,
@@ -72,22 +83,30 @@ export default function Player() {
       s.setPos,
       s.started,
       s.connected,
+      s.displayInterface,
     ])
   );
 
   // god mode toggle
   useEffect(() => {
     if (!god || !started) return;
-    useUser.getState().setZus("god", !godMode);
+    setUser("god", !godMode);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [god]);
 
   // free mode toggle
   useEffect(() => {
     if (!free || !started) return;
-    useUser.getState().setZus("free", !freeState);
+    setUser("free", !freeState);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [free]);
+
+  // free mode toggle
+  useEffect(() => {
+    if (!disp || !started) return;
+    setUser("displayInterface", !displayInterface);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [disp]);
 
   // Regain Pointer after getting out of first person mode
   useEffect(() => {
@@ -108,7 +127,7 @@ export default function Player() {
   useEffect(() => {
     if (!help || !started) return;
     regainPointer();
-    useUser.getState().setZus("about", !about);
+    setUser("about", !about);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [help]);
 

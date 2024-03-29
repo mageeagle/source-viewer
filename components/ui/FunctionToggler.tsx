@@ -1,92 +1,10 @@
 "use client";
-import { useUser } from "@/hooks/useZustand";
+import { setUser, useUser } from "@/hooks/useZustand";
 import { smallInputClass, titleClass } from "../../constants/styles";
 import { useShallow } from "zustand/react/shallow";
 import { HexColorPicker } from "react-colorful";
-
-const Toggle = ({
-  check,
-  func,
-  text,
-}: {
-  check: boolean;
-  func: string | number;
-  text: string;
-}) => {
-  return (
-    <div className="w-fit flex items-center ml-2">
-      <input
-        className="mr-2"
-        type="checkbox"
-        checked={check}
-        onChange={() => useUser.getState().toggleZus(func)}
-      ></input>
-      <div>{text}</div>
-    </div>
-  );
-};
-
-const LocationChange = ({
-  loc: [x, y, z],
-  rkey,
-}: {
-  loc: [number, number, number];
-  rkey: string | number;
-}) => {
-  return (
-    <div className="my-2">
-      Origin{" "}
-      <input
-        className={smallInputClass}
-        value={x}
-        type="number"
-        onChange={(e) =>
-          useUser.getState().setZus(rkey, [Number(e.target.value), y, z])
-        }
-      />{" "}
-      <input
-        className={smallInputClass}
-        value={y}
-        type="number"
-        onChange={(e) =>
-          useUser.getState().setZus(rkey, [x, Number(e.target.value), z])
-        }
-      />{" "}
-      <input
-        className={smallInputClass}
-        value={z}
-        type="number"
-        onChange={(e) =>
-          useUser.getState().setZus(rkey, [x, y, Number(e.target.value)])
-        }
-      />{" "}
-    </div>
-  );
-};
-
-const NumInput = ({
-  val,
-  rkey,
-  text,
-}: {
-  val: number;
-  rkey: string | number;
-  text: string;
-}) => {
-  return (
-    <div className="my-2 ml-2">
-      {text}{" "}
-      <input
-        className={smallInputClass}
-        value={val}
-        type="number"
-        onChange={(e) =>
-          useUser.getState().setZus(rkey, Number(e.target.value))
-        }
-      />
-    </div>
-  );
-};
+import LocationChange from "./LocationChange";
+import { NumInput, Toggle } from "./ZusUI";
 
 export default function FunctionToggler() {
   const [
@@ -149,26 +67,26 @@ export default function FunctionToggler() {
       <LocationChange loc={gridPosZ} rkey="gridPosZ" />
       <div className="flex justify-items-end">
         <NumInput val={gridSize} rkey="gridSize" text="Grid Size" />
-        <NumInput val={subGridSize} rkey="subGridSize" text="Division Size" />
         <NumInput
           val={sectionSize}
           rkey="sectionSize"
-          text="Subdivision Size"
+          text="Section Size"
         />
+        <NumInput val={subGridSize} rkey="subGridSize" text=" Section Subdivision" />
       </div>
       <div className="flex">
         <div className="ml-8">
           Division Color
           <HexColorPicker
             color={gridColor}
-            onChange={(e) => useUser.getState().setZus("gridColor", e)}
+            onChange={(e) => setUser("gridColor", e)}
           />
         </div>
         <div className="ml-8">
           Subdivision Color
           <HexColorPicker
             color={subGridColor}
-            onChange={(e) => useUser.getState().setZus("subGridColor", e)}
+            onChange={(e) => setUser("subGridColor", e)}
           />
         </div>
       </div>

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { titleClass } from "../../constants/styles";
 
-export default function Description({ noFade }: { noFade?: boolean }) {
+export default function Description({ noFade, editor }: { noFade?: boolean, editor?: boolean }) {
   return (
     <div className="max-w-screen ml-4">
       <div className={titleClass}> Source Viewer </div>

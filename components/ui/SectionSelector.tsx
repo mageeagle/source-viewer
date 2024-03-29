@@ -1,7 +1,6 @@
 import { sectionClass } from "@/constants/styles";
 import { useUser } from "../../hooks/useZustand";
 
-
 export default function SectionSelector({
   name,
   i,

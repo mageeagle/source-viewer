@@ -4,26 +4,36 @@ import { useEffect, useRef, useState } from "react";
 import { useUser } from "../../hooks/useZustand";
 import { RgbaColorPicker } from "react-colorful";
 import { deepEqual } from "fast-equals";
+import { NumInput, Toggle } from "./ZusUI";
 
 export default function ColorPickerGroup({
-  colorKey,
-  alphaKey,
-  refKey,
-  maxSource,
+  stype,
   name,
   addClass,
   noFade,
+  editor,
 }: {
-  colorKey: "speakerColor" | "sourceColor";
-  alphaKey: "speakerAlpha" | "sourceAlpha";
-  refKey: "speakerRef" | "sourceRef";
-  maxSource: number;
+  stype: "speaker" | "source";
   name: string;
   addClass?: string;
   noFade?: boolean;
+  editor?: boolean;
 }) {
+  const colorKey = stype === "speaker" ? "speakerColor" : "sourceColor";
+  const alphaKey = stype === "speaker" ? "speakerAlpha" : "sourceAlpha";
+  const refKey = stype === "speaker" ? "speakerRef" : "sourceRef";
+  const sizeKey = stype === "speaker" ? "speakerSize" : "sourceSize";
+  const dispKey =
+    stype === "speaker" ? "speakerNumDisplay" : "sourceNumDisplay";
+  const disp = useUser((s) => s[stype === "speaker" ? "speakerNumDisplay" : "sourceNumDisplay"])
+  const size = useUser((s) => s[stype === "speaker" ? "speakerSize" : "sourceSize"])
+  const sourceFade = useUser((s) => s.sourceFade);
   const [sourceMin, setSourceMin] = useState<number>(1);
-  const [sourceMax, setSourceMax] = useState<number>(maxSource);
+  const [sourceMax, setSourceMax] = useState<number>(
+    stype === "speaker"
+      ? useUser.getState().speakerNo
+      : useUser.getState().sourceNo
+  );
   const [sourceColor, setSourceColor] = useState<{
     r: number;
     g: number;
@@ -39,7 +49,7 @@ export default function ColorPickerGroup({
   const lastColor = useRef([255, 255, 255]);
 
   useEffect(() => {
-    if (!sourceColor || !maxSource) return;
+    if (!sourceColor) return;
     if (!init.current) {
       init.current = true;
       return;
@@ -96,6 +106,15 @@ export default function ColorPickerGroup({
         />{" "}
       </div>
       <RgbaColorPicker color={sourceColor} onChange={setSourceColor} />
+      {!editor && !noFade && stype === "source" && (
+        <Toggle
+          check={sourceFade}
+          func="sourceFade"
+          text="Hide Source if Not Moving"
+        />
+      )}
+      <Toggle check={disp} func={dispKey} text="Display Number" />
+      <NumInput val={size} rkey={sizeKey} text="Size (mm)" />
     </div>
   );
 }
