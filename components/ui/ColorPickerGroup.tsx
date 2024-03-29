@@ -25,14 +25,8 @@ export default function ColorPickerGroup({
   const sizeKey = stype === "speaker" ? "speakerSize" : "sourceSize";
   const dispKey =
     stype === "speaker" ? "speakerNumDisplay" : "sourceNumDisplay";
-  const disp =
-    stype === "speaker"
-      ? useUser((s) => s.speakerNumDisplay)
-      : useUser((s) => s.sourceNumDisplay);
-  const size =
-    stype === "speaker"
-      ? useUser((s) => s.speakerSize)
-      : useUser((s) => s.sourceSize);
+  const disp = useUser((s) => s[stype === "speaker" ? "speakerNumDisplay" : "sourceNumDisplay"])
+  const size = useUser((s) => s[stype === "speaker" ? "speakerSize" : "sourceSize"])
   const sourceFade = useUser((s) => s.sourceFade);
   const [sourceMin, setSourceMin] = useState<number>(1);
   const [sourceMax, setSourceMax] = useState<number>(
