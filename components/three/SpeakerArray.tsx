@@ -31,7 +31,7 @@ function SpeakerArray({ editor }: { editor?: boolean }) {
     const out: Array<React.JSX.Element> = [];
     for (let i = speakerArr.length; i < speakerNo; i++) {
       const ind = i + 1;
-      out.push(<SpeakerSource index={ind} key={"speaker-" + ind} editor/>);
+      out.push(<SpeakerSource index={ind} key={"speaker-" + ind} editor={editor}/>);
     }
     setSpeakerArr((s) => [...s, ...out]);
     // eslint-disable-next-line react-hooks/exhaustive-deps

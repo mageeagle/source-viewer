@@ -23,5 +23,6 @@ export const outerWrapper =
 export const smallButton =
   "p-2 border-2 border-gray-200 rounded-md mr-8 mt-4 hover:bg-gray-50 active:bg-gray-300 focus:outline-none focus:ring focus:ring-gray-300";
 export const bottomRight = "bottom-0 right-0 absolute";
+export const topLeft = "top-0 left-0 absolute";
 export const sectionClass =
   "font-semibold cursor-pointer m-4 text-gray-400 active:text-gray-800 focus:outline-none hover:text-gray-600";

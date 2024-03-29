@@ -1,10 +1,5 @@
 "use client";
-import {
-  bottomRight,
-  innerWrapper,
-  outerWrapper,
-  sectionClass,
-} from "../../constants/styles";
+import { bottomRight, sectionClass } from "../../constants/styles";
 import AboutClose from "./AboutClose";
 import ControlsHelp from "./ControlsHelp";
 import Descriptions from "./Descriptions";
@@ -13,47 +8,27 @@ import SectionSelector from "./SectionSelector";
 import ColorPickerGroup from "./ColorPickerGroup";
 import ColorPickerBg from "./ColorPickerBg";
 import { useShallow } from "zustand/react/shallow";
-import Link from "next/link";
 import FunctionToggler from "./FunctionToggler";
 import { between } from "@/helpers/mathsHelper";
+import { Toggle } from "./ZusUI";
 
-const FadeToggle = () => {
-  const [sourceFade, toggleSourceFade] = useUser(
-    useShallow((s) => [s.sourceFade, s.toggleSourceFade])
+export default function InfoPopUp({ noFade, editor }: { noFade?: boolean, editor?: boolean }) {
+  const [sourceFade, section, connected] = useUser(
+    useShallow((s) => [s.sourceFade, s.infoSection, s.connected])
   );
-  return (
-    <div className="w-fit flex items-center mx-2">
-      <div>Hide Source if Not Moving</div>
-      <input
-        className="mx-2"
-        type="checkbox"
-        checked={sourceFade}
-        onChange={toggleSourceFade}
-      ></input>
-    </div>
-  );
-};
-
-export default function InfoPopUp({ noFade }: { noFade?: boolean }) {
-  const section = useUser((state) => state.infoSection) || 1;
-  const sourceNo = useUser((s) => s.sourceNo);
-  const speakerNo = useUser((s) => s.speakerNo);
-  const connected = useUser((s) => s.connected);
 
   return (
     <div className={bottomRight + " z-50"}>
       <div className="bottom-0 right-0 absolute grid grid-cols-1 justify-items-end text-gray-400 text-right">
-        <div className="m-4 w-screen flex flex-row-reverse justify-items-end items-end">
+        <div className="m-4 lg:w-max w-screen flex flex-row-reverse justify-items-end items-end">
           <div className="w-fit">
-            {section === 1 && <Descriptions noFade={noFade} />}
+            {section === 1 && <Descriptions noFade={noFade} editor={editor}/>}
             {section === 2 && <ControlsHelp />}
             {section === 5 && (
               <ColorPickerGroup
                 noFade={noFade}
-                colorKey={"sourceColor"}
-                alphaKey={"sourceAlpha"}
-                refKey={"sourceRef"}
-                maxSource={sourceNo}
+                editor={editor}
+                stype={"source"}
                 name="Source"
                 addClass="grid justify-items-end"
               />
@@ -61,10 +36,7 @@ export default function InfoPopUp({ noFade }: { noFade?: boolean }) {
             {section === 6 && (
               <ColorPickerGroup
                 noFade={noFade}
-                colorKey={"speakerColor"}
-                alphaKey={"speakerAlpha"}
-                refKey={"speakerRef"}
-                maxSource={speakerNo}
+                stype={"speaker"}
                 name="Speaker"
                 addClass="grid justify-items-end"
               />
@@ -72,7 +44,6 @@ export default function InfoPopUp({ noFade }: { noFade?: boolean }) {
             {section === 7 && <ColorPickerBg />}
             {section === 3 && <FunctionToggler />}
           </div>
-          {section === 5 && !noFade && <FadeToggle />}
         </div>
 
         <div className="flex lg:w-max w-screen flex-wrap-reverse flex-row-reverse items-center">
@@ -89,14 +60,14 @@ export default function InfoPopUp({ noFade }: { noFade?: boolean }) {
               </div>
             )}
           </div>
-          {!between(section, 4, 7) &&
+          {!between(section, 4, 7) && (
             <>
               <SectionSelector i={1} name="Description" />
               <SectionSelector i={2} name="Controls" />
               <SectionSelector i={4} name="Color Settings" />
               <SectionSelector i={3} name="Grid Settings" />
             </>
-          }
+          )}
           {between(section, 4, 7) && (
             <>
               <div

@@ -36,6 +36,7 @@ export const subNestedKey = (
 
 // Set type for store / Only for typescript
 interface StoreState {
+  // Speaker/Source Control
   bgColor: string;
   sourceColor: {
     [index: number]: Color;
@@ -45,26 +46,38 @@ interface StoreState {
   };
   speakerAlpha: { [index: number]: Vector3 };
   sourceAlpha: { [index: number]: Vector3 };
-  osc: OSC | null;
-  sourceRef: InstancedMesh | null;
-  speakerRef: InstancedMesh | null;
-  initialized: boolean;
-  started: boolean;
-  about: boolean;
-  ip: string;
-  port: number;
-  pos: Array<number>;
-  dir: Array<number>;
+  speakerSize: number;
+  sourceSize: number;
+  sourceNumDisplay: boolean,
+  speakerNumDisplay: boolean,
   speakerPos: { [index: number]: Vector3 };
   sourcePos: { [index: number]: Vector3 };
   sourceNo: number;
   speakerNo: number;
-  god: boolean;
-  free: boolean;
+  sourceRef: InstancedMesh | null;
+  speakerRef: InstancedMesh | null;
+  sourceFade: boolean;
+
+  // OSC
+  osc: OSC | null;
+  ip: string;
+  port: number;
   connected: boolean;
+  
+  // First Person
+  initialized: boolean;
+  started: boolean;
+  about: boolean;
   displayInterface: boolean;
   infoSection: number;
-  sourceFade: boolean;
+  
+  // First Person
+  pos: Array<number>;
+  dir: Array<number>;
+  god: boolean;
+  free: boolean;
+
+  // Grid
   axisToggle: boolean;
   gridXToggle: boolean;
   gridYToggle: boolean;
@@ -80,18 +93,31 @@ interface StoreState {
   subGridSize: number;
   gridColor: string;
   subGridColor: string;
+
+  // Editor
   activeID: number;
   activeObj: Object3D | null;
   activeGroup: string;
+  activeLoc: [number, number, number];
+  activeTrans: boolean;
+  editSnap: boolean;
+
+  // Interface
   start: () => void;
   reset: () => void;
   init: () => void;
   aboutToggle: () => void;
+
+  // OSC
   setOsc: (osc: OSC) => void;
   setIp: (a: string) => void;
   setPort: (a: number) => void;
+
+  // Player Position
   setPos: (a: Array<number>) => void;
   setDir: (a: Array<number>) => void;
+
+  // Source/Source Control
   setSourceNo: (a: number) => void;
   setSpeakerNo: (a: number) => void;
   setSourceColor: (color: {
@@ -108,6 +134,8 @@ interface StoreState {
   }) => void;
   setBgColor: (color: string) => void;
   toggleSourceFade: () => void;
+
+  // All in One State Changer
   setZus: (key: string | number, hi: any) => void;
   toggleZus: (key: string | number) => void;
   setNestedZus: (key1: string | number, key2: string | number, hi: any) => void;
@@ -115,20 +143,26 @@ interface StoreState {
 
 // Initial Values
 const user = {
-  osc: null,
+  // First Person State
   god: true,
   free: true,
+  pos: [0, 0, 0],
+  dir: [0, 0, 0],
+
+  // Interface
   initialized: false,
   started: false,
   about: false,
-  sourceFade: true,
-  connected: false,
   displayInterface: true,
   infoSection: 1,
+  
+  // OSC
+  osc: null,
   ip: "localhost",
   port: 8080,
-  pos: [0, 0, 0],
-  dir: [0, 0, 0],
+  connected: false,
+  
+  // Grid
   axisToggle: true,
   gridXToggle: false,
   gridYToggle: false,
@@ -141,9 +175,12 @@ const user = {
   gridPosZ: [0, 0, 0] as [number, number, number],
   gridSize: 10,
   sectionSize: 1,
-  subGridSize: 0.5,
+  subGridSize: 2,
   gridColor: "White",
   subGridColor: "Grey",
+  
+  // Source/Speaker Control
+  bgColor: "Black",
   sourceNo: 1,
   speakerNo: 0,
   sourcePos: {},
@@ -152,12 +189,21 @@ const user = {
   speakerColor: {},
   sourceAlpha: {},
   speakerAlpha: {},
+  speakerSize: 100,
+  sourceSize: 50,
+  sourceNumDisplay: false,
+  speakerNumDisplay: false,
   sourceRef: null,
   speakerRef: null,
-  bgColor: "Black",
+  sourceFade: true,
+  
+  // Editor
   activeID: 0,
   activeObj: null,
   activeGroup: "source",
+  activeLoc: [0, 0, 0] as [number, number, number],
+  activeTrans: false,
+  editSnap: false,
 };
 
 // Create the hook, with set functions
@@ -190,6 +236,7 @@ export const useUser = create<StoreState>()(
   }))
 );
 
+export const setUser = (key:string | number, val:any) => useUser.getState().setZus(key, val) 
 // Depreciated: Use useShallow
 // export const useUserData = (selector) => useUser(selector, shallow)
 // export const useShallow = (hook, selector) => hook(selector, shallow)

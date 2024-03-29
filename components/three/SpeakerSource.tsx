@@ -1,3 +1,4 @@
+"use client";
 import {
   Vector3,
   MeshPhongMaterial,
@@ -6,9 +7,13 @@ import {
   NormalBufferAttributes,
   Color,
 } from "three";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { subKey, useUser } from "@/hooks/useZustand";
+import { setUser, subKey, useUser } from "@/hooks/useZustand";
+import { Center, Text, Text3D } from "@react-three/drei";
+import { useShallow } from "zustand/react/shallow";
+import browserDetection from "@/helpers/browserDetection";
+const browser = browserDetection();
 
 export default function SpeakerSource({
   index,
@@ -27,7 +32,11 @@ export default function SpeakerSource({
   const alpha = useRef(new Vector3(1, 1, 1));
   const activeID = useRef(useUser.getState().activeID);
   const activeGroup = useRef(useUser.getState().activeGroup);
-
+  const activeObj = useRef(useUser.getState().activeObj);
+  const [speakerNumDisplay, speakerSize] = useUser(
+    useShallow((s) => [s.speakerNumDisplay, s.speakerSize])
+  );
+  console.log("hi");
   useEffect(() => {
     const setNZus = useUser.getState().setNestedZus;
     setNZus("speakerColor", index, color.current);
@@ -35,6 +44,7 @@ export default function SpeakerSource({
     setNZus("speakerAlpha", index, alpha.current);
     subKey(useUser, activeID, "activeID");
     subKey(useUser, activeGroup, "activeGroup");
+    subKey(useUser, activeObj, "activeObj");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -48,7 +58,7 @@ export default function SpeakerSource({
 
     // Display source once it starts moving
     if (
-      !editor &&
+      // !editor &&
       !posVec.current.equals(box.current.position) &&
       !(mat.current.opacity > 0)
     ) {
@@ -100,18 +110,37 @@ export default function SpeakerSource({
     }
     if (activeID.current === index && activeGroup.current === "speaker") {
       posVec.current.copy(box.current.position);
+      if (activeObj.current) {
+        if (box.current.uuid !== activeObj.current.uuid)
+          setUser("activeObj", box.current);
+      }
     }
   });
   const click = useCallback(() => {
-    useUser.getState().setZus("activeID", index);
-    useUser.getState().setZus("activeObj", box.current);
-    useUser.getState().setZus("activeGroup", "speaker");
+    if (!editor) return;
+    setUser("activeID", index);
+    setUser("activeObj", box.current);
+    setUser("activeGroup", "speaker");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const size = useMemo(() => speakerSize / 1000, [speakerSize]);
+
+  useEffect(() => {
+    if (!alpha.current || !speakerNumDisplay) return;
+    alpha.current.setX(0.5);
+  }, [speakerNumDisplay]);
+
   return (
     <mesh ref={box} frustumCulled={false} onClick={click}>
-      <boxGeometry args={[0.1, 0.1, 0.1]} />
+      <boxGeometry args={[size, size, size]} />
       <meshPhongMaterial ref={mat} transparent={true} />
+      <Center visible={speakerNumDisplay}>
+        <Text3D size={size * 0.5} height={0.01} font={"HKGrotesk_Bold.json"}>
+          <meshPhongMaterial depthWrite={false} />
+          {index}
+        </Text3D>
+      </Center>
     </mesh>
   );
 }

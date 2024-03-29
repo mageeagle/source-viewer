@@ -6,14 +6,20 @@ import { bottomRight, topWhiteText } from "../../constants/styles";
 import Connection from "./Connection";
 import { useShallow } from "zustand/react/shallow";
 
-function InfoOverlay({ noFade }: { noFade?: boolean }) {
+function InfoOverlay({
+  noFade,
+  editor,
+}: {
+  noFade?: boolean;
+  editor?: boolean;
+}) {
   const [about, displayInterface, started] = useUser(
     useShallow((s) => [s.about, s.displayInterface, s.started])
   );
 
   return (
     <>
-      {about && displayInterface ? <InfoPopUp noFade={noFade} /> : null}
+      {about && displayInterface ? <InfoPopUp noFade={noFade} editor={editor}/> : null}
       {about || !displayInterface || !started ? null : (
         <div className={bottomRight + " z-50"}>
           <InfoButton />

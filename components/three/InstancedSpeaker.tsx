@@ -1,7 +1,7 @@
 "use client"
 import { MeshLambertMaterial, InstancedMesh, BoxGeometry } from "three";
 import { useRef, useEffect, useState } from "react";
-import { useUser } from "@/hooks/useZustand";
+import { setUser, useUser } from "@/hooks/useZustand";
 import { useFrame } from "@react-three/fiber";
 import { useShallow } from "zustand/react/shallow";
 import InstancedSpeakerLerp from "./InstancedSpeakerLerp";
@@ -9,7 +9,7 @@ import InstancedSpeakerLerp from "./InstancedSpeakerLerp";
 export default function InstancedSpeaker() {
   const ref = useRef<InstancedMesh>(null);
   useEffect(() => {
-    useUser.getState().setZus("speakerRef", ref.current);
+    setUser("speakerRef", ref.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

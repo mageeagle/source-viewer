@@ -1,7 +1,7 @@
 "use client";
 import { MeshLambertMaterial, InstancedMesh, SphereGeometry } from "three";
 import { useRef, useEffect, useState } from "react";
-import { useUser } from "@/hooks/useZustand";
+import { setUser, useUser } from "@/hooks/useZustand";
 import { useFrame } from "@react-three/fiber";
 import { useShallow } from "zustand/react/shallow";
 import InstancedSourceLerp from "./InstancedSourceLerp";
@@ -9,7 +9,7 @@ import InstancedSourceLerp from "./InstancedSourceLerp";
 export default function InstancedSource() {
   const ref = useRef<InstancedMesh>(null);
   useEffect(() => {
-    useUser.getState().setZus("sourceRef", ref.current);
+    setUser("sourceRef", ref.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

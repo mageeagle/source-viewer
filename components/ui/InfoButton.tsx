@@ -1,8 +1,8 @@
-import { useUser } from "../../hooks/useZustand";
+import { setUser, useUser } from "../../hooks/useZustand";
 
 export default function InfoButton() {
   const handleButton = () => {
-    useUser.getState().setZus("about", true);
+    setUser("about", true);
   };
   return (
     <button

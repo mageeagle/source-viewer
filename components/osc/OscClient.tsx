@@ -1,5 +1,5 @@
 "use client";
-import { useUser } from "@/hooks/useZustand";
+import { setUser, useUser } from "@/hooks/useZustand";
 import { useEffect } from "react";
 import OSC from "osc-js";
 import { deepEqual } from "fast-equals";
@@ -14,13 +14,13 @@ export default function OscClient() {
     useUser.getState().setOsc(osc);
     
     osc.on("open", () => {
-      useUser.getState().setZus("connected", true);
+      setUser("connected", true);
       const msg = new OSC.Message("/connected", true);
       osc.send(msg);
     });
 
     osc.on("close", () => {
-      useUser.getState().setZus("connected", false);
+      setUser("connected", false);
     });
 
     osc.on(

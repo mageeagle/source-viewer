@@ -9,7 +9,7 @@ const rotY1 = new Euler(0, 0, 1.57);
 const rotY2 = new Euler(0, 0, -1.57);
 const rotZ1 = new Euler(1.57, 0, 0);
 const rotZ2 = new Euler(-1.57, 0, 0);
-export default function ControlsOverlay() {
+export default function GridOverlay() {
   const gridX1 = useRef<Mesh<BufferGeometry<NormalBufferAttributes>> | null>(
     null
   );
@@ -86,7 +86,7 @@ export default function ControlsOverlay() {
             ref={gridX1}
             infiniteGrid={gridXInf}
             rotation={rotX1}
-            cellSize={subGridSize}
+            cellSize={sectionSize / subGridSize}
             sectionSize={sectionSize}
             cellColor={subGridColor}
             sectionColor={gridColor}
@@ -97,7 +97,7 @@ export default function ControlsOverlay() {
             ref={gridX2}
             infiniteGrid={gridXInf}
             rotation={rotX2}
-            cellSize={subGridSize}
+            cellSize={sectionSize / subGridSize}
             sectionSize={sectionSize}
             cellColor={subGridColor}
             sectionColor={gridColor}
@@ -112,7 +112,7 @@ export default function ControlsOverlay() {
             ref={gridY1}
             infiniteGrid={gridYInf}
             rotation={rotY1}
-            cellSize={subGridSize}
+            cellSize={sectionSize / subGridSize}
             sectionSize={sectionSize}
             cellColor={subGridColor}
             sectionColor={gridColor}
@@ -123,7 +123,7 @@ export default function ControlsOverlay() {
             ref={gridY2}
             infiniteGrid={gridYInf}
             rotation={rotY2}
-            cellSize={subGridSize}
+            cellSize={sectionSize / subGridSize}
             sectionSize={sectionSize}
             cellColor={subGridColor}
             sectionColor={gridColor}
@@ -138,7 +138,7 @@ export default function ControlsOverlay() {
             ref={gridZ1}
             infiniteGrid={gridZInf}
             rotation={rotZ1}
-            cellSize={subGridSize}
+            cellSize={sectionSize / subGridSize}
             sectionSize={sectionSize}
             cellColor={subGridColor}
             sectionColor={gridColor}
@@ -149,7 +149,7 @@ export default function ControlsOverlay() {
             ref={gridZ2}
             infiniteGrid={gridZInf}
             rotation={rotZ2}
-            cellSize={subGridSize}
+            cellSize={sectionSize / subGridSize}
             sectionSize={sectionSize}
             cellColor={subGridColor}
             sectionColor={gridColor}

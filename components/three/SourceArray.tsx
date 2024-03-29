@@ -1,5 +1,5 @@
 "use client";
-import { useUser } from "@/hooks/useZustand";
+import { setUser, useUser } from "@/hooks/useZustand";
 import React, { useEffect, useState } from "react";
 import SoundSource from "./SoundSource";
 import { useShallow } from "zustand/react/shallow";
@@ -14,7 +14,7 @@ function SourceArray({ editor }: { editor?: boolean }) {
 
   useEffect(() => {
     if (!editor) return
-    useUser.getState().setZus("sourceFade", false)
+    setUser("sourceFade", false)
   }, [])
 
   useEffect(() => {
@@ -35,7 +35,7 @@ function SourceArray({ editor }: { editor?: boolean }) {
     const out: Array<React.JSX.Element> = [];
     for (let i = sourceArr.length; i < sourceNo; i++) {
       const ind = i + 1;
-      out.push(<SoundSource index={ind} key={"source-" + ind} editor/>);
+      out.push(<SoundSource index={ind} key={"source-" + ind} editor={editor}/>);
     }
     setSourceArr((s) => [...s, ...out]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
