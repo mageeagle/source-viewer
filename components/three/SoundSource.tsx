@@ -11,8 +11,6 @@ import { useFrame } from "@react-three/fiber";
 import { Center, Text3D } from "@react-three/drei";
 import { setUser, subKey, useUser } from "@/hooks/useZustand";
 import { useShallow } from "zustand/react/shallow";
-import browserDetection from "@/helpers/browserDetection";
-const browser = browserDetection();
 
 export default function SoundSource({
   index,
