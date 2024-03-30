@@ -34,8 +34,8 @@ export default function CanvasCompo({
           makeDefault
           zoom={100}
           near={0.1}
-          far={2000}
-          position={[0, 0, 300]}
+          far={5000}
+          position={[0, 0, 50]}
         />
       )}
       {!god && (
