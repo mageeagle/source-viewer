@@ -25,8 +25,12 @@ export default function ColorPickerGroup({
   const sizeKey = stype === "speaker" ? "speakerSize" : "sourceSize";
   const dispKey =
     stype === "speaker" ? "speakerNumDisplay" : "sourceNumDisplay";
-  const disp = useUser((s) => s[stype === "speaker" ? "speakerNumDisplay" : "sourceNumDisplay"])
-  const size = useUser((s) => s[stype === "speaker" ? "speakerSize" : "sourceSize"])
+  const disp = useUser(
+    (s) => s[stype === "speaker" ? "speakerNumDisplay" : "sourceNumDisplay"]
+  );
+  const size = useUser(
+    (s) => s[stype === "speaker" ? "speakerSize" : "sourceSize"]
+  );
   const sourceFade = useUser((s) => s.sourceFade);
   const [sourceMin, setSourceMin] = useState<number>(1);
   const [sourceMax, setSourceMax] = useState<number>(
@@ -46,12 +50,17 @@ export default function ColorPickerGroup({
     a: 1,
   });
   const init = useRef(false);
+  const init2 = useRef(false); // no brainer way to stop re-render messing with initial opacity
   const lastColor = useRef([255, 255, 255]);
 
   useEffect(() => {
     if (!sourceColor) return;
     if (!init.current) {
       init.current = true;
+      return;
+    }
+    if (!init2.current) {
+      init2.current = true;
       return;
     }
     const state = useUser.getState();
@@ -113,7 +122,9 @@ export default function ColorPickerGroup({
           text="Hide Source if Not Moving"
         />
       )}
-      <Toggle check={disp} func={dispKey} text="Display Number" />
+      { !noFade &&
+        <Toggle check={disp} func={dispKey} text="Display Number" />
+      }
       <NumInput val={size} rkey={sizeKey} text="Size (mm)" />
     </div>
   );

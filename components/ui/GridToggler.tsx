@@ -1,44 +1,44 @@
 "use client";
 import { setUser, useUser } from "@/hooks/useZustand";
-import { smallInputClass, titleClass } from "../../constants/styles";
+import { titleClass } from "../../constants/styles";
 import { useShallow } from "zustand/react/shallow";
-import { HexColorPicker } from "react-colorful";
+import { HexColorPicker, RgbColorPicker } from "react-colorful";
 import LocationChange from "./LocationChange";
 import { NumInput, Toggle } from "./ZusUI";
 
-export default function FunctionToggler() {
+export default function GridToggler() {
   const [
-    gridXToggle,
-    gridYToggle,
-    gridZToggle,
-    gridPosX,
-    gridPosY,
-    gridPosZ,
+    gridXZToggle,
+    gridYZToggle,
+    gridXYToggle,
+    gridPosXZ,
+    gridPosYZ,
+    gridPosXY,
     gridSize,
-    subGridSize,
+    subGridDiv,
     gridColor,
     subGridColor,
     sectionSize,
-    gridXInf,
-    gridYInf,
-    gridZInf,
+    gridXZInf,
+    gridYZInf,
+    gridXYInf,
     axisToggle,
   ] = useUser(
     useShallow((s) => [
-      s.gridXToggle,
-      s.gridYToggle,
-      s.gridZToggle,
-      s.gridPosX,
-      s.gridPosY,
-      s.gridPosZ,
+      s.gridXZToggle,
+      s.gridYZToggle,
+      s.gridXYToggle,
+      s.gridPosXZ,
+      s.gridPosYZ,
+      s.gridPosXY,
       s.gridSize,
-      s.subGridSize,
+      s.subGridDiv,
       s.gridColor,
       s.subGridColor,
       s.sectionSize,
-      s.gridXInf,
-      s.gridYInf,
-      s.gridZInf,
+      s.gridXZInf,
+      s.gridYZInf,
+      s.gridXYInf,
       s.axisToggle,
     ])
   );
@@ -51,40 +51,40 @@ export default function FunctionToggler() {
         text={"Axis Helper Display"}
       />
       <div className="flex justify-items-end">
-        <Toggle check={gridXToggle} func={"gridXToggle"} text={"XZ Grid"} />
-        <Toggle check={gridXInf} func={"gridXInf"} text={"Infinite"} />
+        <Toggle check={gridXZToggle} func={"gridXZToggle"} text={"XZ Grid"} />
+        <Toggle check={gridXZInf} func={"gridXZInf"} text={"Infinite"} />
       </div>
-      <LocationChange loc={gridPosX} rkey="gridPosX" />
+      <LocationChange loc={gridPosXZ} rkey="gridPosXZ" />
       <div className="flex justify-items-end">
-        <Toggle check={gridYToggle} func={"gridYToggle"} text={"YZ Grid"} />
-        <Toggle check={gridYInf} func={"gridYInf"} text={"Infinite"} />
+        <Toggle check={gridYZToggle} func={"gridYZToggle"} text={"YZ Grid"} />
+        <Toggle check={gridYZInf} func={"gridYZInf"} text={"Infinite"} />
       </div>
-      <LocationChange loc={gridPosY} rkey="gridPosY" />
+      <LocationChange loc={gridPosYZ} rkey="gridPosYZ" />
       <div className="flex justify-items-end">
-        <Toggle check={gridZToggle} func={"gridZToggle"} text={"XY Grid"} />
-        <Toggle check={gridZInf} func={"gridZInf"} text={"Infinite"} />
+        <Toggle check={gridXYToggle} func={"gridXYToggle"} text={"XY Grid"} />
+        <Toggle check={gridXYInf} func={"gridXYInf"} text={"Infinite"} />
       </div>
-      <LocationChange loc={gridPosZ} rkey="gridPosZ" />
+      <LocationChange loc={gridPosXY} rkey="gridPosXY" />
       <div className="flex justify-items-end">
         <NumInput val={gridSize} rkey="gridSize" text="Grid Size" />
+        <NumInput val={sectionSize} rkey="sectionSize" text="Section Size" />
         <NumInput
-          val={sectionSize}
-          rkey="sectionSize"
-          text="Section Size"
+          val={subGridDiv}
+          rkey="subGridDiv"
+          text="Section Subdivision"
         />
-        <NumInput val={subGridSize} rkey="subGridSize" text=" Section Subdivision" />
       </div>
       <div className="flex">
         <div className="ml-8">
           Division Color
-          <HexColorPicker
+          <RgbColorPicker
             color={gridColor}
             onChange={(e) => setUser("gridColor", e)}
           />
         </div>
         <div className="ml-8">
           Subdivision Color
-          <HexColorPicker
+          <RgbColorPicker
             color={subGridColor}
             onChange={(e) => setUser("subGridColor", e)}
           />

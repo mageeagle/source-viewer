@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import AboutPopUp from "@/components/ui/InfoOverlay";
 import OscClient from "@/components/osc/OscClient";
+import OscState from "@/components/osc/OscState";
 
 // const inter = Inter({ subsets: ['latin'] })
 
@@ -20,6 +21,7 @@ export default function RootLayout({
       <body>
         <div className="w-screen h-screen">
           <OscClient />
+          <OscState />
           {children}
         </div>
       </body>

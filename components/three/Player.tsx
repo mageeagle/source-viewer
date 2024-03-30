@@ -74,6 +74,7 @@ export default function Player() {
     started,
     connected,
     displayInterface,
+    disableInterface,
   ] = useUser(
     useShallow((s) => [
       s.god,
@@ -84,26 +85,27 @@ export default function Player() {
       s.started,
       s.connected,
       s.displayInterface,
+      s.disableInterface,
     ])
   );
 
   // god mode toggle
   useEffect(() => {
     if (!god || !started) return;
-    setUser("god", !godMode);
+    setUser("god", !godMode || disableInterface);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [god]);
 
   // free mode toggle
   useEffect(() => {
-    if (!free || !started) return;
+    if (!free || !started || disableInterface) return;
     setUser("free", !freeState);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [free]);
 
-  // free mode toggle
+  // display interface toggle
   useEffect(() => {
-    if (!disp || !started) return;
+    if (!disp || !started || disableInterface) return;
     setUser("displayInterface", !displayInterface);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [disp]);
@@ -112,8 +114,8 @@ export default function Player() {
   useEffect(() => {
     if (!godMode) return;
     regainPointer();
-    timeout.current = 0;
-    camera.lookAt(0, 0, 0);
+    // timeout.current = 0;
+    // camera.lookAt(0, 0, 0);
     if (!connected) return;
     // return to origin
     const xyz = new OSC.Message("/listener/xyz", 0, 0, 0);
@@ -125,7 +127,7 @@ export default function Player() {
 
   // Regain Pointer after getting out of canvas
   useEffect(() => {
-    if (!help || !started) return;
+    if (!help || !started || disableInterface) return;
     regainPointer();
     setUser("about", !about);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -135,6 +137,15 @@ export default function Player() {
     if (!about) return;
     regainPointer();
   }, [about]);
+
+  useEffect(() => {
+    if (disableInterface === null || disableInterface === undefined) return;
+    if (!disableInterface) {
+      setUser("displayInterface", true);
+      return;
+    }
+    setUser("displayInterface", false);
+  }, [disableInterface]);
 
   // Three.js Code
 
@@ -148,10 +159,10 @@ export default function Player() {
     !godMode && meshRef.current.getWorldPosition(camera.position);
     // Lazy to set timeout
 
-    if (godMode && timeout.current < 1) {
-      timeout.current += delta;
-      camera.position.lerp(topView, 0.05);
-    }
+    // if (godMode && timeout.current < 1) {
+    //   timeout.current += delta;
+    //   camera.position.lerp(topView, 0.05);
+    // }
 
     if (freeState) {
       frontVector.current.set(0, 0, Number(backward) - Number(forward));

@@ -6,6 +6,8 @@ import {
   OrthographicCamera,
   GizmoViewport,
   GizmoHelper,
+  PerspectiveCamera,
+  GizmoViewcube,
 } from "@react-three/drei";
 import Player from "./Player";
 import { useUser } from "@/hooks/useZustand";
@@ -21,24 +23,34 @@ export default function CanvasCompo({
 }: {
   children: React.ReactNode;
 }) {
-  const [bgColor, axisToggle, displayInterface] = useUser(
-    useShallow((s) => [s.bgColor, s.axisToggle, s.displayInterface])
+  const [bgColor, axisToggle, displayInterface, god] = useUser(
+    useShallow((s) => [s.bgColor, s.axisToggle, s.displayInterface, s.god])
   );
   return (
-    <Canvas
-      camera={{ fov: 45, near: 0.000001, far: 50000, position: [0, 0, 20] }}
-      gl={{ alpha: false }}
-      shadows
-    >
+    <Canvas gl={{ alpha: false }} shadows>
       {axisToggle && <axesHelper args={[1]} />}
-      {/* <OrthographicCamera
-        makeDefault
-        zoom={100}
-        near={0.1}
-        far={2000}
-        position={[0, 0, 300]}
-      /> */}
-      <color attach="background" args={[bgColor]} />
+      {god && (
+        <OrthographicCamera
+          makeDefault
+          zoom={100}
+          near={0.1}
+          far={2000}
+          position={[0, 0, 300]}
+        />
+      )}
+      {!god && (
+        <PerspectiveCamera
+          makeDefault
+          fov={45}
+          near={0.1}
+          far={50000}
+          position={[0, 0, 20]}
+        />
+      )}
+      <color
+        attach="background"
+        args={[bgColor.r / 255, bgColor.g / 255, bgColor.b / 255]}
+      />
       <AdaptiveDpr pixelated />
       <AdaptiveEvents />
       {/* <Sky distance={450000} sunPosition={[0, 1, 0]} inclination={0} azimuth={0.25} /> */}
@@ -47,11 +59,14 @@ export default function CanvasCompo({
       {children}
       <directionalLight color="white" position={[10000, 10000, 10000]} />
       <GridOverlay />
-      {displayInterface &&
+      {displayInterface && (
         <GizmoHelper alignment="bottom-left" margin={[100, 100]}>
-          <GizmoViewport />
+          <GizmoViewcube
+            color="grey"
+            faces={["Right", "Left", "Back", "Front", "Top", "Bottom"]}
+          />
         </GizmoHelper>
-      }
+      )}
       <Transformer />
     </Canvas>
   );

@@ -15,8 +15,8 @@ export default function InstancedSource() {
 
   const started = useUser((s) => s.started);
   const [sourceArr, setSourceArr] = useState<Array<React.JSX.Element>>([]);
-  const [sourceNo, setSourceNo] = useUser(
-    useShallow((s) => [s.sourceNo, s.setSourceNo])
+  const [sourceNo, setSourceNo, sourceSize] = useUser(
+    useShallow((s) => [s.sourceNo, s.setSourceNo, s.sourceSize])
   );
   const osc = useUser((s) => s.osc);
   useEffect(() => {
@@ -43,6 +43,15 @@ export default function InstancedSource() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [started, sourceNo]);
 
+  const size = useRef(0.05)
+  useEffect(() => {
+    if (!sourceSize) return
+    const newSize = sourceSize / 1000
+    const scale = newSize / size.current
+    ref.current?.geometry.scale(scale, scale, scale)
+    size.current = newSize
+  }, [sourceSize])
+  
   useFrame(() => {
     if (!ref.current) return;
     // I would rather update it all the time, comparing each frame for lerping seems annoying
@@ -51,6 +60,8 @@ export default function InstancedSource() {
     ref.current.instanceColor.needsUpdate = true;
   });
   // Max Number of Sources now is 1000
+  // Drei's Instances looks like a more updated way to do this, 
+  // but since this is already up and working, I won't be changing this for now
   return (
     <>
       {sourceArr}
@@ -59,10 +70,11 @@ export default function InstancedSource() {
         args={[geo, mat, 1000]}
         count={sourceNo}
         frustumCulled={false}
-      />
+        />
     </>
   );
 }
+
 
 const geo = new SphereGeometry(0.05, 32, 16);
 const mat = new MeshLambertMaterial({ transparent: true });

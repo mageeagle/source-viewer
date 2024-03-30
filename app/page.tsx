@@ -1,7 +1,7 @@
 "use client"
 import CanvasCompo from "@/components/three/CanvasCompo";
-import InstancedSource from "@/components/three/InstancedSource";
-import InstancedSpeaker from "@/components/three/InstancedSpeaker";
+import SourceArray from "@/components/three/SourceArray";
+import SpeakerArray from "@/components/three/SpeakerArray";
 import InfoOverlay from "@/components/ui/InfoOverlay";
 import { useUser } from "@/hooks/useZustand";
 
@@ -9,10 +9,10 @@ export default function Home() {
   const displayInterface = useUser((s) => s.displayInterface);
   return (
     <>
-      {displayInterface && <InfoOverlay noFade/>}
+      {displayInterface && <InfoOverlay />}
       <CanvasCompo>
-        <InstancedSource />
-        <InstancedSpeaker />
+        <SourceArray />
+        <SpeakerArray />
       </CanvasCompo>
     </>
   );

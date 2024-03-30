@@ -1,158 +1,145 @@
 import { Box, Grid, Plane } from "@react-three/drei";
 import { BufferGeometry, Euler, Mesh, NormalBufferAttributes } from "three";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useUser } from "@/hooks/useZustand";
 import { materialColor } from "three/examples/jsm/nodes/Nodes.js";
-const rotX1 = new Euler(0, 0, 0);
-const rotX2 = new Euler(3.14, 0, 0);
-const rotY1 = new Euler(0, 0, 1.57);
-const rotY2 = new Euler(0, 0, -1.57);
-const rotZ1 = new Euler(1.57, 0, 0);
-const rotZ2 = new Euler(-1.57, 0, 0);
+const rotXZ1 = new Euler(0, 0, 0);
+const rotXZ2 = new Euler(3.14, 0, 0);
+const rotYZ1 = new Euler(0, 0, 1.57);
+const rotYZ2 = new Euler(0, 0, -1.57);
+const rotXY1 = new Euler(1.57, 0, 0);
+const rotXY2 = new Euler(-1.57, 0, 0);
 export default function GridOverlay() {
-  const gridX1 = useRef<Mesh<BufferGeometry<NormalBufferAttributes>> | null>(
+  const gridXZ1 = useRef<Mesh<BufferGeometry<NormalBufferAttributes>> | null>(
     null
   );
-  const gridX2 = useRef<Mesh<BufferGeometry<NormalBufferAttributes>> | null>(
+  const gridXZ2 = useRef<Mesh<BufferGeometry<NormalBufferAttributes>> | null>(
     null
   );
-  const gridY1 = useRef<Mesh<BufferGeometry<NormalBufferAttributes>> | null>(
+  const gridYZ1 = useRef<Mesh<BufferGeometry<NormalBufferAttributes>> | null>(
     null
   );
-  const gridY2 = useRef<Mesh<BufferGeometry<NormalBufferAttributes>> | null>(
+  const gridYZ2 = useRef<Mesh<BufferGeometry<NormalBufferAttributes>> | null>(
     null
   );
-  const gridZ1 = useRef<Mesh<BufferGeometry<NormalBufferAttributes>> | null>(
+  const gridXY1 = useRef<Mesh<BufferGeometry<NormalBufferAttributes>> | null>(
     null
   );
-  const gridZ2 = useRef<Mesh<BufferGeometry<NormalBufferAttributes>> | null>(
+  const gridXY2 = useRef<Mesh<BufferGeometry<NormalBufferAttributes>> | null>(
     null
   );
   const [
-    gridXToggle,
-    gridYToggle,
-    gridZToggle,
-    gridPosX,
-    gridPosY,
-    gridPosZ,
+    gridXZToggle,
+    gridYZToggle,
+    gridXYToggle,
+    gridPosXZ,
+    gridPosYZ,
+    gridPosXY,
     gridSize,
-    subGridSize,
+    subGridDiv,
     gridColor,
     subGridColor,
     sectionSize,
-    gridXInf,
-    gridYInf,
-    gridZInf,
+    gridXZInf,
+    gridYZInf,
+    gridXYInf,
   ] = useUser((s) => [
-    s.gridXToggle,
-    s.gridYToggle,
-    s.gridZToggle,
-    s.gridPosX,
-    s.gridPosY,
-    s.gridPosZ,
+    s.gridXZToggle,
+    s.gridYZToggle,
+    s.gridXYToggle,
+    s.gridPosXZ,
+    s.gridPosYZ,
+    s.gridPosXY,
     s.gridSize,
-    s.subGridSize,
+    s.subGridDiv,
     s.gridColor,
     s.subGridColor,
     s.sectionSize,
-    s.gridXInf,
-    s.gridYInf,
-    s.gridZInf,
+    s.gridXZInf,
+    s.gridYZInf,
+    s.gridXYInf,
   ]);
 
-  useEffect(() => {
-    if (!gridPosX) return;
-    gridX1.current?.position.set(...gridPosX);
-    gridX2.current?.position.set(...gridPosX);
-  }, [gridPosX]);
-  useEffect(() => {
-    if (!gridPosY) return;
-    gridY1.current?.position.set(...gridPosY);
-    gridY2.current?.position.set(...gridPosY);
-  }, [gridPosY]);
-  useEffect(() => {
-    if (!gridPosZ) return;
-    gridZ1.current?.position.set(...gridPosZ);
-    gridZ2.current?.position.set(...gridPosZ);
-  }, [gridPosZ]);
+  const cellColor = useMemo(() => `rgb(${subGridColor.r}, ${subGridColor.g}, ${subGridColor.b})`, [subGridColor])
+  const sectionColor = useMemo(() => `rgb(${gridColor.r}, ${gridColor.g}, ${gridColor.b})`, [gridColor])
 
   return (
     <>
-      {gridXToggle && (
+      {gridXZToggle && (
         <>
           <Grid
             args={[gridSize, gridSize]}
-            position={[0, 0, 0]}
-            ref={gridX1}
-            infiniteGrid={gridXInf}
-            rotation={rotX1}
-            cellSize={sectionSize / subGridSize}
+            position={gridPosXZ}
+            ref={gridXZ1}
+            infiniteGrid={gridXZInf}
+            rotation={rotXZ1}
+            cellSize={sectionSize / subGridDiv}
             sectionSize={sectionSize}
-            cellColor={subGridColor}
-            sectionColor={gridColor}
+            cellColor={cellColor}
+            sectionColor={sectionColor}
           />
           <Grid
             args={[gridSize, gridSize]}
-            position={[0, 0, 0]}
-            ref={gridX2}
-            infiniteGrid={gridXInf}
-            rotation={rotX2}
-            cellSize={sectionSize / subGridSize}
+            position={gridPosXZ}
+            ref={gridXZ2}
+            infiniteGrid={gridXZInf}
+            rotation={rotXZ2}
+            cellSize={sectionSize / subGridDiv}
             sectionSize={sectionSize}
-            cellColor={subGridColor}
-            sectionColor={gridColor}
+            cellColor={cellColor}
+            sectionColor={sectionColor}
           />
         </>
       )}
-      {gridYToggle && (
+      {gridYZToggle && (
         <>
           <Grid
             args={[gridSize, gridSize]}
-            position={[0, 0, 0]}
-            ref={gridY1}
-            infiniteGrid={gridYInf}
-            rotation={rotY1}
-            cellSize={sectionSize / subGridSize}
+            position={gridPosYZ}
+            ref={gridYZ1}
+            infiniteGrid={gridYZInf}
+            rotation={rotYZ1}
+            cellSize={sectionSize / subGridDiv}
             sectionSize={sectionSize}
-            cellColor={subGridColor}
-            sectionColor={gridColor}
+            cellColor={cellColor}
+            sectionColor={sectionColor}
           />
           <Grid
             args={[gridSize, gridSize]}
-            position={[0, 0, 0]}
-            ref={gridY2}
-            infiniteGrid={gridYInf}
-            rotation={rotY2}
-            cellSize={sectionSize / subGridSize}
+            position={gridPosYZ}
+            ref={gridYZ2}
+            infiniteGrid={gridYZInf}
+            rotation={rotYZ2}
+            cellSize={sectionSize / subGridDiv}
             sectionSize={sectionSize}
-            cellColor={subGridColor}
-            sectionColor={gridColor}
+            cellColor={cellColor}
+            sectionColor={sectionColor}
           />
         </>
       )}
-      {gridZToggle && (
+      {gridXYToggle && (
         <>
           <Grid
             args={[gridSize, gridSize]}
-            position={[0, 0, 0]}
-            ref={gridZ1}
-            infiniteGrid={gridZInf}
-            rotation={rotZ1}
-            cellSize={sectionSize / subGridSize}
+            position={gridPosXY}
+            ref={gridXY1}
+            infiniteGrid={gridXYInf}
+            rotation={rotXY1}
+            cellSize={sectionSize / subGridDiv}
             sectionSize={sectionSize}
-            cellColor={subGridColor}
-            sectionColor={gridColor}
+            cellColor={cellColor}
+            sectionColor={sectionColor}
           />
           <Grid
             args={[gridSize, gridSize]}
-            position={[0, 0, 0]}
-            ref={gridZ2}
-            infiniteGrid={gridZInf}
-            rotation={rotZ2}
-            cellSize={sectionSize / subGridSize}
+            position={gridPosXY}
+            ref={gridXY2}
+            infiniteGrid={gridXYInf}
+            rotation={rotXY2}
+            cellSize={sectionSize / subGridDiv}
             sectionSize={sectionSize}
-            cellColor={subGridColor}
-            sectionColor={gridColor}
+            cellColor={cellColor}
+            sectionColor={sectionColor}
           />
         </>
       )}

@@ -34,7 +34,7 @@ export default function SpeakerSource({
   const [speakerNumDisplay, speakerSize] = useUser(
     useShallow((s) => [s.speakerNumDisplay, s.speakerSize])
   );
-  console.log("hi");
+
   useEffect(() => {
     const setNZus = useUser.getState().setNestedZus;
     setNZus("speakerColor", index, color.current);

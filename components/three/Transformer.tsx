@@ -7,9 +7,10 @@ import { useShallow } from "zustand/react/shallow";
 
 export default function Transformer() {
   const trans = useRef<TransformControlsImpl>(null);
-  const [activeObj, editSnap, sectionSize, subGridSize] = useUser(
-    useShallow((s) => [s.activeObj, s.editSnap, s.sectionSize, s.subGridSize])
+  const [activeObj, editSnap, sectionSize, subGridDiv] = useUser(
+    useShallow((s) => [s.activeObj, s.editSnap, s.sectionSize, s.subGridDiv])
   );
+
   useEffect(() => {
     if (!trans.current) return;
     if (!activeObj) {
@@ -28,8 +29,8 @@ export default function Transformer() {
       trans.current?.setTranslationSnap(0);
       return;
     }
-    trans.current?.setTranslationSnap(sectionSize / subGridSize);
-  }, [editSnap, sectionSize, subGridSize]);
+    trans.current?.setTranslationSnap(sectionSize / subGridDiv);
+  }, [editSnap, sectionSize, subGridDiv]);
 
   const change = useCallback(() => {
     if (!activeObj) return;

@@ -37,7 +37,7 @@ export const subNestedKey = (
 // Set type for store / Only for typescript
 interface StoreState {
   // Speaker/Source Control
-  bgColor: string;
+  bgColor: { r: number; g: number; b: number };
   sourceColor: {
     [index: number]: Color;
   };
@@ -48,8 +48,8 @@ interface StoreState {
   sourceAlpha: { [index: number]: Vector3 };
   speakerSize: number;
   sourceSize: number;
-  sourceNumDisplay: boolean,
-  speakerNumDisplay: boolean,
+  sourceNumDisplay: boolean;
+  speakerNumDisplay: boolean;
   speakerPos: { [index: number]: Vector3 };
   sourcePos: { [index: number]: Vector3 };
   sourceNo: number;
@@ -63,14 +63,16 @@ interface StoreState {
   ip: string;
   port: number;
   connected: boolean;
-  
-  // First Person
+  sendOsc: boolean;
+
+  // Interface
   initialized: boolean;
   started: boolean;
   about: boolean;
   displayInterface: boolean;
   infoSection: number;
-  
+  disableInterface: boolean;
+
   // First Person
   pos: Array<number>;
   dir: Array<number>;
@@ -79,20 +81,20 @@ interface StoreState {
 
   // Grid
   axisToggle: boolean;
-  gridXToggle: boolean;
-  gridYToggle: boolean;
-  gridZToggle: boolean;
-  gridXInf: boolean;
-  gridYInf: boolean;
-  gridZInf: boolean;
-  gridPosX: [number, number, number];
-  gridPosY: [number, number, number];
-  gridPosZ: [number, number, number];
+  gridXZToggle: boolean;
+  gridYZToggle: boolean;
+  gridXYToggle: boolean;
+  gridXZInf: boolean;
+  gridYZInf: boolean;
+  gridXYInf: boolean;
+  gridPosXZ: [number, number, number];
+  gridPosYZ: [number, number, number];
+  gridPosXY: [number, number, number];
   gridSize: number;
   sectionSize: number;
-  subGridSize: number;
-  gridColor: string;
-  subGridColor: string;
+  subGridDiv: number;
+  gridColor: { r: number; g: number; b: number };
+  subGridColor: { r: number; g: number; b: number };
 
   // Editor
   activeID: number;
@@ -132,7 +134,7 @@ interface StoreState {
     b: number;
     a: number;
   }) => void;
-  setBgColor: (color: string) => void;
+  setBgColor: (color: { r: number; g: number; b: number }) => void;
   toggleSourceFade: () => void;
 
   // All in One State Changer
@@ -155,32 +157,34 @@ const user = {
   about: false,
   displayInterface: true,
   infoSection: 1,
-  
+  disableInterface: false,
+
   // OSC
   osc: null,
   ip: "localhost",
   port: 8080,
   connected: false,
-  
+  sendOsc: false,
+
   // Grid
   axisToggle: true,
-  gridXToggle: false,
-  gridYToggle: false,
-  gridZToggle: false,
-  gridXInf: false,
-  gridYInf: false,
-  gridZInf: false,
-  gridPosX: [0, 0, 0] as [number, number, number],
-  gridPosY: [0, 0, 0] as [number, number, number],
-  gridPosZ: [0, 0, 0] as [number, number, number],
+  gridXZToggle: false,
+  gridYZToggle: false,
+  gridXYToggle: false,
+  gridXZInf: false,
+  gridYZInf: false,
+  gridXYInf: false,
+  gridPosXZ: [0, 0, 0] as [number, number, number],
+  gridPosYZ: [0, 0, 0] as [number, number, number],
+  gridPosXY: [0, 0, 0] as [number, number, number],
   gridSize: 10,
   sectionSize: 1,
-  subGridSize: 2,
-  gridColor: "White",
-  subGridColor: "Grey",
-  
+  subGridDiv: 2,
+  gridColor: { r: 255, g: 255, b: 255 },
+  subGridColor: { r: 127, g: 127, b: 127 },
+
   // Source/Speaker Control
-  bgColor: "Black",
+  bgColor: { r: 0, g: 0, b: 0 },
   sourceNo: 1,
   speakerNo: 0,
   sourcePos: {},
@@ -196,7 +200,7 @@ const user = {
   sourceRef: null,
   speakerRef: null,
   sourceFade: true,
-  
+
   // Editor
   activeID: 0,
   activeObj: null,
@@ -236,7 +240,8 @@ export const useUser = create<StoreState>()(
   }))
 );
 
-export const setUser = (key:string | number, val:any) => useUser.getState().setZus(key, val) 
+export const setUser = (key: string | number, val: any) =>
+  useUser.getState().setZus(key, val);
 // Depreciated: Use useShallow
 // export const useUserData = (selector) => useUser(selector, shallow)
 // export const useShallow = (hook, selector) => hook(selector, shallow)

@@ -7,23 +7,11 @@ import { useShallow } from "zustand/react/shallow";
 function SourceArray({ editor }: { editor?: boolean }) {
   const started = useUser((s) => s.started);
   const [sourceArr, setSourceArr] = useState<Array<React.JSX.Element>>([]);
-  const [sourceNo, setSourceNo] = useUser(
-    useShallow((s) => [s.sourceNo, s.setSourceNo])
-  );
-  const osc = useUser((s) => s.osc);
-
+  const [sourceNo] = useUser(useShallow((s) => [s.sourceNo]));
   useEffect(() => {
-    if (!editor) return
-    setUser("sourceFade", false)
-  }, [])
-
-  useEffect(() => {
-    if (!osc) return;
-    osc.on("/source/number", (msg: { args: Array<number> }) =>
-      setSourceNo(msg.args[0])
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [osc]);
+    if (!editor) return;
+    setUser("sourceFade", false);
+  }, []);
 
   useEffect(() => {
     if (!started) return;
@@ -35,7 +23,9 @@ function SourceArray({ editor }: { editor?: boolean }) {
     const out: Array<React.JSX.Element> = [];
     for (let i = sourceArr.length; i < sourceNo; i++) {
       const ind = i + 1;
-      out.push(<SoundSource index={ind} key={"source-" + ind} editor={editor}/>);
+      out.push(
+        <SoundSource index={ind} key={"source-" + ind} editor={editor} />
+      );
     }
     setSourceArr((s) => [...s, ...out]);
     // eslint-disable-next-line react-hooks/exhaustive-deps

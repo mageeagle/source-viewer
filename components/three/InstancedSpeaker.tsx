@@ -15,8 +15,8 @@ export default function InstancedSpeaker() {
 
   const started = useUser((s) => s.started);
   const [speakerArr, setSpeakerArr] = useState<Array<React.JSX.Element>>([]);
-  const [speakerNo, setSpeakerNo] = useUser(
-    useShallow((s) => [s.speakerNo, s.setSpeakerNo])
+  const [speakerNo, setSpeakerNo, speakerSize] = useUser(
+    useShallow((s) => [s.speakerNo, s.setSpeakerNo, s.speakerSize])
   );
   const osc = useUser((s) => s.osc);
   useEffect(() => {
@@ -43,6 +43,15 @@ export default function InstancedSpeaker() {
     setSpeakerArr((s) => [...s, ...out]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [started, speakerNo]);
+
+  const size = useRef(0.1)
+  useEffect(() => {
+    if (!speakerSize) return
+    const newSize = speakerSize / 1000
+    const scale = newSize / size.current
+    ref.current?.geometry.scale(scale, scale, scale)
+    size.current = newSize
+  }, [speakerSize])
 
   useFrame(() => {
     if (!ref.current) return;

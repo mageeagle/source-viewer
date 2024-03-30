@@ -8,11 +8,17 @@ import SectionSelector from "./SectionSelector";
 import ColorPickerGroup from "./ColorPickerGroup";
 import ColorPickerBg from "./ColorPickerBg";
 import { useShallow } from "zustand/react/shallow";
-import FunctionToggler from "./FunctionToggler";
+import GridToggler from "./GridToggler";
 import { between } from "@/helpers/mathsHelper";
-import { Toggle } from "./ZusUI";
+import SectionToggler from "./SectionToggler";
 
-export default function InfoPopUp({ noFade, editor }: { noFade?: boolean, editor?: boolean }) {
+export default function InfoPopUp({
+  noFade,
+  editor,
+}: {
+  noFade?: boolean;
+  editor?: boolean;
+}) {
   const [sourceFade, section, connected] = useUser(
     useShallow((s) => [s.sourceFade, s.infoSection, s.connected])
   );
@@ -22,7 +28,7 @@ export default function InfoPopUp({ noFade, editor }: { noFade?: boolean, editor
       <div className="bottom-0 right-0 absolute grid grid-cols-1 justify-items-end text-gray-400 text-right">
         <div className="m-4 lg:w-max w-screen flex flex-row-reverse justify-items-end items-end">
           <div className="w-fit">
-            {section === 1 && <Descriptions noFade={noFade} editor={editor}/>}
+            {section === 1 && <Descriptions noFade={noFade} editor={editor} />}
             {section === 2 && <ControlsHelp />}
             {section === 5 && (
               <ColorPickerGroup
@@ -42,7 +48,7 @@ export default function InfoPopUp({ noFade, editor }: { noFade?: boolean, editor
               />
             )}
             {section === 7 && <ColorPickerBg />}
-            {section === 3 && <FunctionToggler />}
+            {section === 3 && <GridToggler />}
           </div>
         </div>
 
@@ -76,11 +82,12 @@ export default function InfoPopUp({ noFade, editor }: { noFade?: boolean, editor
               >
                 Back
               </div>
-              <SectionSelector i={5} name="Source Color Picker" />
-              <SectionSelector i={6} name="Speaker Color Picker" />
-              <SectionSelector i={7} name="Background Color Picker" />
+              <SectionSelector i={5} name="Source Settings" />
+              <SectionSelector i={6} name="Speaker Settings" />
+              <SectionSelector i={7} name="Background Color" />
             </>
           )}
+          <SectionToggler rkey="sendOsc" name="Send Settings as OSC" />
         </div>
       </div>
     </div>
