@@ -96,7 +96,7 @@ export default function OscState() {
     osc.on("/grid/section/size", (msg: { args: Array<number> }) =>
       setUser("sectionSize", msg.args[0])
     );
-    osc.on("/grid/subdiv/size", (msg: { args: Array<number> }) =>
+    osc.on("/grid/subdiv/num", (msg: { args: Array<number> }) =>
       setUser("subGridDiv", msg.args[0])
     );
     osc.on("/grid/section/color", (msg: { args: Array<number> }) =>
@@ -162,18 +162,20 @@ export default function OscState() {
     const msg20 = new OSC.Message("/grid/xy/xyz", ...s.gridPosXY);
     const msg21 = new OSC.Message("/grid/size", s.gridSize);
     const msg22 = new OSC.Message("/grid/section/size", s.sectionSize);
-    const msg23 = new OSC.Message("/grid/subdiv/size", s.subGridDiv);
+    const msg23 = new OSC.Message("/grid/subdiv/num", s.subGridDiv);
     const msg24 = new OSC.Message(
       "/grid/section/color",
       s.gridColor.r / 255,
       s.gridColor.g / 255,
-      s.gridColor.b / 255
+      s.gridColor.b / 255,
+      1
     );
     const msg25 = new OSC.Message(
       "/grid/subdiv/color",
       s.subGridColor.r / 255,
       s.subGridColor.g / 255,
-      s.subGridColor.b / 255
+      s.subGridColor.b / 255,
+      1
     );
     const msg26 = new OSC.Message("/grid/snap", Number(s.editSnap));
     const bundle = new OSC.Bundle(
