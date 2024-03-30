@@ -3,9 +3,13 @@ import { useUser } from "../../hooks/useZustand";
 
 export default function SectionToggler({
   name,
+  nameTrue,
+  check,
   rkey,
 }: {
   name: string;
+  nameTrue?: string;
+  check?: boolean;
   rkey: string | number;
 }) {
   return (
@@ -13,7 +17,7 @@ export default function SectionToggler({
       className={sectionClass}
       onClick={() => useUser.getState().toggleZus(rkey)}
     >
-      {name}
+      {check ? nameTrue : name}
     </div>
   );
 }

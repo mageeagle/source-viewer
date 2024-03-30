@@ -1,3 +1,4 @@
+import { xyz2aed } from "@/helpers/mathsHelper";
 import { setUser, useUser } from "@/hooks/useZustand";
 import { TransformControls } from "@react-three/drei";
 import OSC from "osc-js";
@@ -7,8 +8,8 @@ import { useShallow } from "zustand/react/shallow";
 
 export default function Transformer() {
   const trans = useRef<TransformControlsImpl>(null);
-  const [activeObj, editSnap, sectionSize, subGridDiv] = useUser(
-    useShallow((s) => [s.activeObj, s.editSnap, s.sectionSize, s.subGridDiv])
+  const [activeObj, editSnap, sectionSize, subGridDiv, sendAed] = useUser(
+    useShallow((s) => [s.activeObj, s.editSnap, s.sectionSize, s.subGridDiv, s.sendAed])
   );
 
   useEffect(() => {
@@ -34,21 +35,34 @@ export default function Transformer() {
 
   const change = useCallback(() => {
     if (!activeObj) return;
-    const pos = activeObj.position;
-    setUser("activeLoc", pos.toArray());
-    const xyz = new OSC.Message(
-      "/" +
-        useUser.getState().activeGroup +
+    const pos = activeObj.position.toArray();
+    setUser("activeLoc", pos);
+    if (sendAed) {
+      const aedPos = xyz2aed(pos);
+      const aed = new OSC.Message(
         "/" +
-        useUser.getState().activeID +
-        "/xyz",
-      pos.x,
-      pos.y,
-      pos.z
-    );
-    useUser.getState().osc?.send(xyz);
+          useUser.getState().activeGroup +
+          "/" +
+          useUser.getState().activeID +
+          "/aed",
+        ...aedPos
+      );
+      useUser.getState().osc?.send(aed);
+      return
+    }
+    if (!sendAed) {
+      const xyz = new OSC.Message(
+        "/" +
+          useUser.getState().activeGroup +
+          "/" +
+          useUser.getState().activeID +
+          "/xyz",
+        ...pos
+      );
+      useUser.getState().osc?.send(xyz);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeObj]);
+  }, [activeObj, sendAed]);
 
   return (
     <>

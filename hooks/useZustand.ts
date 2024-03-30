@@ -64,6 +64,7 @@ interface StoreState {
   port: number;
   connected: boolean;
   sendOsc: boolean;
+  sendAed: boolean;
 
   // Interface
   initialized: boolean;
@@ -165,7 +166,8 @@ const user = {
   port: 8080,
   connected: false,
   sendOsc: false,
-
+  sendAed: false,
+  
   // Grid
   axisToggle: true,
   gridXZToggle: false,

@@ -19,8 +19,8 @@ export default function InfoPopUp({
   noFade?: boolean;
   editor?: boolean;
 }) {
-  const [sourceFade, section, connected] = useUser(
-    useShallow((s) => [s.sourceFade, s.infoSection, s.connected])
+  const [section, connected, sendAed] = useUser(
+    useShallow((s) => [s.infoSection, s.connected, s.sendAed])
   );
 
   return (
@@ -70,8 +70,8 @@ export default function InfoPopUp({
             <>
               <SectionSelector i={1} name="Description" />
               <SectionSelector i={2} name="Controls" />
-              <SectionSelector i={4} name="Color Settings" />
-              <SectionSelector i={3} name="Grid Settings" />
+              <SectionSelector i={4} name="Settings" />
+              <SectionSelector i={3} name="Grid" />
             </>
           )}
           {between(section, 4, 7) && (
@@ -82,12 +82,13 @@ export default function InfoPopUp({
               >
                 Back
               </div>
-              <SectionSelector i={5} name="Source Settings" />
-              <SectionSelector i={6} name="Speaker Settings" />
-              <SectionSelector i={7} name="Background Color" />
+              <SectionSelector i={5} name="Source" />
+              <SectionSelector i={6} name="Speaker" />
+              <SectionSelector i={7} name="Background" />
             </>
           )}
-          <SectionToggler rkey="sendOsc" name="Send Settings as OSC" />
+          {between(section, 1, 3) && <SectionToggler rkey="sendOsc" name="Send Settings as OSC" />}
+          {between(section, 4, 7) && editor && <SectionToggler rkey="sendAed" nameTrue="Format: AED" name="Format: XYZ" check={sendAed} />}
         </div>
       </div>
     </div>
