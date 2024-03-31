@@ -1,4 +1,4 @@
-## 3D Sound Source Visualizer for Spatial Audio
+## 3D Sound Source Visualizer and Editor for Spatial Audio
 
 ![](./docs/example.gif)
 
