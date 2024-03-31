@@ -25,11 +25,16 @@ export default function ColorPickerGroup({
   const sizeKey = stype === "speaker" ? "speakerSize" : "sourceSize";
   const dispKey =
     stype === "speaker" ? "speakerNumDisplay" : "sourceNumDisplay";
+  const sourceKey =
+    stype === "speaker" ? "speakerNo" : "sourceNo";
   const disp = useUser(
     (s) => s[stype === "speaker" ? "speakerNumDisplay" : "sourceNumDisplay"]
   );
   const size = useUser(
     (s) => s[stype === "speaker" ? "speakerSize" : "sourceSize"]
+  );
+  const num = useUser(
+    (s) => s[stype === "speaker" ? "speakerNo" : "sourceNo"]
   );
   const sourceFade = useUser((s) => s.sourceFade);
   const [sourceMin, setSourceMin] = useState<number>(1);
@@ -123,8 +128,9 @@ export default function ColorPickerGroup({
         />
       )}
       { !noFade &&
-        <Toggle check={disp} func={dispKey} text="Display Number" />
+        <Toggle check={disp} func={dispKey} text="Display Channel Number" />
       }
+      <NumInput val={num} rkey={sourceKey} text={"Number of " + name} />
       <NumInput val={size} rkey={sizeKey} text="Size (mm)" />
     </div>
   );
