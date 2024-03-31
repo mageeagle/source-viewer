@@ -48,7 +48,7 @@ export default function InfoPopUp({
               />
             )}
             {section === 7 && <ColorPickerBg />}
-            {section === 3 && <GridToggler />}
+            {section === 4 && <GridToggler />}
           </div>
         </div>
 
@@ -66,15 +66,14 @@ export default function InfoPopUp({
               </div>
             )}
           </div>
-          {!between(section, 4, 7) && (
+          {!between(section, 3, 7) && (
             <>
               <SectionSelector i={1} name="Description" />
               <SectionSelector i={2} name="Controls" />
-              <SectionSelector i={4} name="Settings" />
-              <SectionSelector i={3} name="Grid" />
+              <SectionSelector i={3} name="Settings" />
             </>
           )}
-          {between(section, 4, 7) && (
+          {between(section, 3, 7) && (
             <>
               <div
                 className={sectionClass}
@@ -82,13 +81,23 @@ export default function InfoPopUp({
               >
                 Back
               </div>
+              <SectionSelector i={4} name="Grid" />
               <SectionSelector i={5} name="Source" />
               <SectionSelector i={6} name="Speaker" />
               <SectionSelector i={7} name="Background" />
             </>
           )}
-          {between(section, 1, 3) && <SectionToggler rkey="sendOsc" name="Send Settings as OSC" />}
-          {between(section, 4, 7) && editor && <SectionToggler rkey="sendAed" nameTrue="Format: AED" name="Format: XYZ" check={sendAed} />}
+          {between(section, 1, 2) && (
+            <SectionToggler rkey="sendOsc" name="Send Settings as OSC" />
+          )}
+          {between(section, 3, 7) && editor && (
+            <SectionToggler
+              rkey="sendAed"
+              nameTrue="Format: AED"
+              name="Format: XYZ"
+              check={sendAed}
+            />
+          )}
         </div>
       </div>
     </div>
