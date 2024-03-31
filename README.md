@@ -10,6 +10,12 @@ The interface allows the viewing of sound sources and speaker position in a 3D E
 
 An editor mode has been added to change positions of sources and speakers. Helpers such as grids, snapping and orientation changing have been added.
 
+### Run Locally
+```
+npm i
+npm run dev
+```
+
 ### Connection:
 1) Open a WebSocket server for OSC on the host computer. (Please refer to Examples)
 2) Open the Interface and enter the IP address and port number to connect. localhost in IP for local use on same computer.
