@@ -19,7 +19,9 @@ export default function OscState() {
     osc.on("/speaker/number", (msg: { args: Array<number> }) =>
       setSpeakerNo(msg.args[0])
     );
-    osc.on("/source/number", (msg: { args: Array<number> }) => setSourceNo(msg.args[0]));
+    osc.on("/source/number", (msg: { args: Array<number> }) =>
+      setSourceNo(msg.args[0])
+    );
     osc.on("/background/color", (msg: { args: Array<number> }) =>
       setBgColor({
         r: msg.args[0] * 255,
@@ -116,6 +118,9 @@ export default function OscState() {
     osc.on("/grid/snap", (msg: { args: Array<number> }) =>
       setUser("editSnap", !!msg.args[0])
     );
+    osc.on("/output/aed", (msg: { args: Array<number> }) =>
+      setUser("sendAed", !!msg.args[0])
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [osc]);
 
@@ -178,6 +183,7 @@ export default function OscState() {
       1
     );
     const msg26 = new OSC.Message("/grid/snap", Number(s.editSnap));
+    const msg27 = new OSC.Message("/output/aed", Number(s.sendAed));
     const bundle = new OSC.Bundle(
       msg1,
       msg2,
@@ -204,7 +210,8 @@ export default function OscState() {
       msg23,
       msg24,
       msg25,
-      msg26
+      msg26,
+      msg27
     );
     osc?.send(bundle);
     setUser("sendOsc", false);
