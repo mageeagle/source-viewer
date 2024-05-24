@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import OSC from "osc-js";
 import { deepEqual } from "fast-equals";
 import { aed2xyz } from "@/helpers/mathsHelper";
+import { Vector3 } from "three";
 
 export default function OscClient() {
   const started = useUser((s) => s.started);
@@ -32,7 +33,10 @@ export default function OscClient() {
         const newPos = [message.args[0], message.args[1], message.args[2]];
         // Position Check
         const pos = useUser.getState().sourcePos[index];
-        if (!pos) return;
+        if (!pos) {
+          useUser.getState().setNestedZus("sourcePos", index, new Vector3(...newPos))
+          return
+        }
         if (!deepEqual(newPos, pos.toArray())) {
           pos.fromArray(newPos);
         }
@@ -47,7 +51,10 @@ export default function OscClient() {
         const newPos = [message.args[0], message.args[1], message.args[2]];
         // Position Check
         const pos = useUser.getState().speakerPos[index];
-        if (!pos) return;
+        if (!pos) {
+          useUser.getState().setNestedZus("speakerPos", index, new Vector3(...newPos))
+          return
+        }
         if (!deepEqual(newPos, pos.toArray())) {
           pos.fromArray(newPos);
         }
@@ -62,7 +69,10 @@ export default function OscClient() {
         const newPos = aed2xyz([message.args[0], message.args[1], message.args[2]]);
         // Position Check
         const pos = useUser.getState().sourcePos[index];
-        if (!pos) return;
+        if (!pos) {
+          useUser.getState().setNestedZus("sourcePos", index, new Vector3(...newPos))
+          return
+        }
         if (!deepEqual(newPos, pos.toArray())) {
           pos.fromArray(newPos);
         }
@@ -77,7 +87,10 @@ export default function OscClient() {
         const newPos = aed2xyz([message.args[0], message.args[1], message.args[2]]);
         // Position Check
         const pos = useUser.getState().speakerPos[index];
-        if (!pos) return;
+        if (!pos) {
+          useUser.getState().setNestedZus("speakerPos", index, new Vector3(...newPos))
+          return
+        }
         if (!deepEqual(newPos, pos.toArray())) {
           pos.fromArray(newPos);
         }

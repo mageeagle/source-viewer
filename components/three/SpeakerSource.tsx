@@ -23,7 +23,9 @@ export default function SpeakerSource({
   const box = useRef<Mesh<BufferGeometry<NormalBufferAttributes>> | null>(null);
   const mat = useRef<MeshPhongMaterial | null>(null);
   const posVec = useRef<Vector3>(
-    new Vector3(...[Math.random() * 5, Math.random() * 5, Math.random() * 5])
+    useUser.getState().speakerPos[index]
+      ? useUser.getState().speakerPos[index]
+      : new Vector3(Math.random() * 5, Math.random() * 5, Math.random() * 5)
   );
   const color = useRef(new Color());
   // Workaround to avoid setting state for OSC
@@ -38,7 +40,9 @@ export default function SpeakerSource({
   useEffect(() => {
     const setNZus = useUser.getState().setNestedZus;
     setNZus("speakerColor", index, color.current);
-    setNZus("speakerPos", index, posVec.current);
+    if (!useUser.getState().speakerPos[index]) {
+      setNZus("speakerPos", index, posVec.current);
+    }
     setNZus("speakerAlpha", index, alpha.current);
     subKey(useUser, activeID, "activeID");
     subKey(useUser, activeGroup, "activeGroup");

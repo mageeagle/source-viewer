@@ -24,7 +24,9 @@ export default function SoundSource({
   );
   const mat = useRef<MeshPhongMaterial | null>(null);
   const posVec = useRef<Vector3>(
-    new Vector3(Math.random() * 5, Math.random() * 5, Math.random() * 5)
+    useUser.getState().sourcePos[index]
+      ? useUser.getState().sourcePos[index]
+      : new Vector3(Math.random() * 5, Math.random() * 5, Math.random() * 5)
   );
   const color = useRef(new Color());
   // Workaround to avoid setting state for OSC
@@ -37,10 +39,12 @@ export default function SoundSource({
     useShallow((s) => [s.sourceNumDisplay, s.sourceSize])
   );
   useEffect(() => {
-    const setZus = useUser.getState().setNestedZus;
-    setZus("sourceColor", index, color.current);
-    setZus("sourcePos", index, posVec.current);
-    setZus("sourceAlpha", index, alpha.current);
+    const setNZus = useUser.getState().setNestedZus;
+    setNZus("sourceColor", index, color.current);
+    if (!useUser.getState().sourcePos[index]) {
+      setNZus("sourcePos", index, posVec.current);
+    }
+    setNZus("sourceAlpha", index, alpha.current);
     subKey(useUser, activeID, "activeID");
     subKey(useUser, activeGroup, "activeGroup");
     subKey(useUser, activeObj, "activeObj");
@@ -156,29 +160,25 @@ export default function SoundSource({
   const size = useMemo(() => sourceSize / 1000, [sourceSize]);
 
   useEffect(() => {
-    if (!alpha.current) return
+    if (!alpha.current) return;
     if (!sourceNumDisplay) {
-      alpha.current.setX(1)
-      return
+      alpha.current.setX(1);
+      return;
     }
-    alpha.current.setX(0.5)
-  }, [sourceNumDisplay])
+    alpha.current.setX(0.5);
+  }, [sourceNumDisplay]);
 
   return (
     <>
       <mesh ref={ball} frustumCulled={false} onClick={click}>
         <sphereGeometry args={[size, 32, 16]} />
         <meshPhongMaterial ref={mat} transparent={true} />
-          <Center visible={sourceNumDisplay}>
-            <Text3D
-              size={size}
-              height={0.01}
-              font={"HKGrotesk_Bold.json"}
-            >
-              <meshPhongMaterial depthWrite={false} />
-              {index}
-            </Text3D>
-          </Center>
+        <Center visible={sourceNumDisplay}>
+          <Text3D size={size} height={0.01} font={"HKGrotesk_Bold.json"}>
+            <meshPhongMaterial depthWrite={false} />
+            {index}
+          </Text3D>
+        </Center>
       </mesh>
     </>
   );
